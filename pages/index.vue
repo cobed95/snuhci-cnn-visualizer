@@ -12,6 +12,7 @@
       <div class="text-center">
         <logo />
         <vuetify-logo />
+        <d3-obj />
       </div>
       <v-card>
         <v-card-title class="headline">
@@ -82,11 +83,13 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import D3Obj from '~/components/D3.vue'
 
 export default {
   components: {
     Logo,
-    VuetifyLogo
+    VuetifyLogo,
+    D3Obj
   }
 }
 </script>
