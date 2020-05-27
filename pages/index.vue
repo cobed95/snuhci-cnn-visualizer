@@ -10,11 +10,11 @@
       md6
     >
       <div class="text-center">
-        <logo />
-        <vuetify-logo />
+        <!-- <logo /> -->
+        <!-- <vuetify-logo /> -->
         <d3-obj />
       </div>
-      <v-card>
+      <!-- <v-card>
         <v-card-title class="headline">
           Welcome to the Vuetify + Nuxt.js template
         </v-card-title>
@@ -75,7 +75,7 @@
             Continue
           </v-btn>
         </v-card-actions>
-      </v-card>
+      </v-card> -->
     </v-flex>
   </v-layout>
 </template>

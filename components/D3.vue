@@ -30,10 +30,16 @@ export default {
     const container = svg.append('g')
       .attr('transform', translate(margin.left, margin.right));
     
-    const data = [{
-      a: 1,
-      b: 2
-    }]
+    const data = [
+      {
+        a: 1,
+        b: 2
+      },
+      {
+        a: 5,
+        b: 10
+      }
+    ]
     const circles = container.selectAll('circle').data(data).enter().append('circle')
       .attr('cx', d => d.a)
       .attr('cy', d => d.b)
