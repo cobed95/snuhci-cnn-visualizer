@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+  <title>d3.js grid of squares</title>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript">
+
+const width = 5000;
+const height = 5000;
+
+const data = [
+  {x: 500, y: 400},
+  {x: 300, y: 230},
+  {x: 60, y: 95}
+];
+
+const svg = d3.select("body")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+const g = svg.selectAll(".rect")
+  .data(data)
+  .enter()
+  .append("g")
+  .classed('rect', true)
+  .attr("transform", d => "translate(" + d.x + "," + d.y + ")");
+
+// Currently builds a 1x3 grid of squares
+for (var i = 0; i < 3; i++) {
+  const preFill = 
+    g.append("rect")
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("x", i * 10)
+      .attr("y", 0)
+      .attr("stroke", "black");
+
+  if (i % 2 == 0) 
+    preFill.attr("fill", "white");
+  else
+    preFill.attr("fill", "black");
+}
+
+</script>
+</body>
+
