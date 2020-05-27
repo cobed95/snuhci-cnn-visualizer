@@ -1,0 +1,19 @@
+{
+  "name": "snuhci-cnn-visualizer",
+  "version": "1.0.0",
+  "description": "cnn visualization tool",
+  "author": "Hyunmin Choi, Eundo Lee",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/vuetify": "^1.0.0"
+  }
+}
