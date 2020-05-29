@@ -1,18 +1,26 @@
-import * as d3 from 'd3'
+import * as d3 from 'd3';
+import { MDCSlider } from '@material/slider';
 import { bootstrap } from './nnbootstrap';
-import { ripple, slider } from 'material-components-web'
 
-// const { ripple, slider } = mdc;
-const { MDCSlider } = slider;
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
 
-const { MDCRipple } = ripple;
-const playButton = document.querySelector('.mdc-button')
-const playButtonRipple = new MDCRipple(playButton);
-// playButtonRipple.listen('MDCRipple:onclick', () => console.log(`Value changed to ${playButtonRipple.value}`));
+let play = false;
+const playButton = document.querySelector('.mdc-button');
+const playButtonClickHandler = () => { 
+  play = !play;
+  if (play)
+    playButton.textContent = "pause";
+  else
+    playButton.textContent = "play";
+};
+playButton.addEventListener("click", playButtonClickHandler);
 
-const getEpoch = () => epochSlider.value;
+const increaseEpoch = () => {
+  if (play)
+    epochSlider.value++
+}
+setInterval(increaseEpoch, 1000)
 
 const width = 5000;
 const height = 5000;
@@ -60,7 +68,7 @@ const cnn = {
   ]
 };
 
-const svg = d3.select("body")
+const svg = d3.select("#d3-container")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
