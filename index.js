@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { MDCSlider } from '@material/slider';
-import { bootstrap } from './nnbootstrap';
+import { bootstrap, getTestData } from './nnbootstrap';
 
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', (a) => {
@@ -74,12 +74,21 @@ const cnn = {
 };
 
 function visualize(model) {
+  const conv1Weights = model.layers[0].getWeights()[0].arraySync();
+  const conv2Weights = model.layers[2].getWeights()[0].arraySync();
+  const fcWeights = model.layers[5].getWeights()[0].arraySync();
+
+  const testData = getTestData();
+  const inputImage = { image: testData[2] };
+
   const svg = d3.select("#d3-container")
     .append("svg")
     .attr("width", width)
     .attr("height", height);
 
   const g = svg.append("g");
+
+  const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
 
   const zoomed = () => { g.attr("transform", d3.event.transform); };
   const zoom = d3.zoom().scaleExtent([1, 4]).on("zoom", zoomed);
@@ -105,18 +114,33 @@ function visualize(model) {
     );
   };
 
-  // Conv Layers
-  const conv = g.selectAll(".rect")
-    .data(cnn.conv)
+  // Input Layer
+  const input = g.selectAll(".input")
+    .data([inputImage])
     .enter()
     .append("g")
     .classed('rect', true);
 
-  conv
-    .append("text")
-    .text("Convolution Layers");
+  // Draw input image
+  for (let row = 0; row < inputImage.image.length; row++) {
+    for (let col = 0; col < inputImage.image[row].length; col++) {
+      input.append("rect")
+        .attr("width", 3)
+        .attr("height", 3)
+        .attr("x", row * 3)
+        .attr("y", col * 3)
+        .attr("fill", d => {
+          return colorScale(d.image[col][row]);
+        });
+    }
+  }
 
-  const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
+  // Conv Layers
+  const conv = g.selectAll(".conv")
+    .data(cnn.conv)
+    .enter()
+    .append("g")
+    .classed('rect', true);
 
   const drawRects = (layer, h, v) => {
     layer.each(function(p, j) {
@@ -140,14 +164,14 @@ function visualize(model) {
     })
   }
 
-  drawRects(conv, 80.0, 0);
+  drawRects(conv, 80.0, 100);
 
   const subsampling = g.selectAll(".subsampling")
     .data(cnn.subsampling)
     .enter()
     .append("g");
 
-  drawRects(subsampling, 60.0, 100);
+  drawRects(subsampling, 60.0, 200);
 
   Object.assign(svg.node(), {
     zoomIn: () => svg.transition().call(zoom.scaleBy, 2),
@@ -159,12 +183,20 @@ function visualize(model) {
 function init() {
   console.log('Bootstrapping');
 
+<<<<<<< HEAD
   visualize()
   // bootstrap()
   //   .then(model => {
   //     console.log('Bootstrapping finished.');
   //     visualize(model);
   //   })
+=======
+  bootstrap()
+    .then(model => {
+      console.log('Bootstrapping finished.');
+      visualize(model);
+    });
+>>>>>>> master
 }
 
 init();
