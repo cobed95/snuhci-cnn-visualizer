@@ -15,7 +15,7 @@
     <div class="mdc-touch-target-wrapper">
       <button class="mdc-button mdc-button--touch">
         <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">My Accessible Button</span>
+        <span class="mdc-button__label">Play</span>
         <div class="mdc-button__touch"></div>
       </button>
     </div>
@@ -102,20 +102,24 @@ const conv = svg.selectAll(".rect")
   .append("g")
   .classed('rect', true);
 
+conv
+  .append("text")
+  .text("Convolution Layers");
+
 const colorScale = d3.scale.linear().domain([0.0, 1.0]).range(['white', 'black']);
 
 cnn.conv.forEach((layer, idx) => {
   const layerAgg = conv.append("g")
-    .attr("transform", d => "translate(" + (idx * 40.0) + "," + 0.0 + ")")
+    .attr("transform", d => "translate(" + (idx * 80.0) + "," + 0.0 + ")")
     .attr("stroke", "black");
 
   for (var row = 0; row < layer.weights.length; row++) {
     for (var col = 0; col < layer.weights[row].length; col++) {
       layerAgg.append("rect")
-        .attr("width", 10)
-        .attr("height", 10)
-        .attr("x", row * 10)
-        .attr("y", col * 10)
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("x", row * 20)
+        .attr("y", col * 20)
         .attr("fill", d => colorScale(layer.weights[row][col]));
     }
   }
@@ -128,23 +132,23 @@ const subsampling = svg.selectAll(".subsampling")
 
 cnn.subsampling.forEach((layer, idx) => {
   const layerAgg = subsampling.append("g")
-    .attr("transform", d => "translate(" + (idx * 30.0) + "," + 0.0 + ")")
+    .attr("transform", d => "translate(" + (idx * 60.0) + "," + 0.0 + ")")
     .attr("stroke", "black");
 
   for (var row = 0; row < layer.weights.length; row++) {
     for (var col = 0; col < layer.weights[row].length; col++) {
       layerAgg.append("rect")
-        .attr("width", 10)
-        .attr("height", 10)
-        .attr("x", row * 10)
-        .attr("y", col * 10)
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("x", row * 20)
+        .attr("y", col * 20)
         .attr("fill", d => colorScale(layer.weights[row][col]));
     }
   }
 });
 
 subsampling
-  .attr("transform", d => "translate(" + 0 + "," + 50 + ")");
+  .attr("transform", d => "translate(" + 0 + "," + 100 + ")");
 
 </script>
 </body>
