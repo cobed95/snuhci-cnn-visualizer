@@ -1,16 +1,18 @@
 import * as d3 from 'd3';
 import { MDCSlider } from '@material/slider';
-import { MDCRipple } from '@material/ripple';
+import { bootstrap } from './nnbootstrap';
 
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
 
 let play = false;
-const playButton = document.querySelector('.mdc-button')
-// const playButtonRipple = new MDCRipple(playButton);
+const playButton = document.querySelector('.mdc-button');
 const playButtonClickHandler = () => { 
-  console.log('clicked') 
-  play = !play
+  play = !play;
+  if (play)
+    playButton.textContent = "pause";
+  else
+    playButton.textContent = "play";
 };
 playButton.addEventListener("click", playButtonClickHandler);
 
@@ -18,11 +20,13 @@ const increaseEpoch = () => {
   if (play)
     epochSlider.value++
 }
-
 setInterval(increaseEpoch, 1000)
 
 const width = 5000;
 const height = 5000;
+
+console.log("Bootstrapping");
+bootstrap();
 
 const cnn = {
   conv: [ 
@@ -62,9 +66,9 @@ const cnn = {
       ]
     }
   ]
-}
+};
 
-const svg = d3.select("body")
+const svg = d3.select("#d3-container")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
