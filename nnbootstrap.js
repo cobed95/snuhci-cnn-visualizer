@@ -47,7 +47,7 @@ function createConvModel() {
   model.add(tf.layers.conv2d({
     inputShape: [IMAGE_H, IMAGE_W, 1],
     kernelSize: 3,
-    filters: 16,
+    filters: 8,
     activation: 'relu'
   }));
 
@@ -57,7 +57,7 @@ function createConvModel() {
   model.add(tf.layers.maxPooling2d({poolSize: 2, strides: 2}));
 
   // Our third layer is another convolution, this time with 32 filters.
-  model.add(tf.layers.conv2d({kernelSize: 3, filters: 32, activation: 'relu'}));
+  model.add(tf.layers.conv2d({kernelSize: 3, filters: 16, activation: 'relu'}));
 
   // Max pooling again.
   model.add(tf.layers.maxPooling2d({poolSize: 2, strides: 2}));
@@ -67,7 +67,7 @@ function createConvModel() {
   // higher dimensional data to a final classification output layer.
   model.add(tf.layers.flatten({}));
 
-  model.add(tf.layers.dense({units: 64, activation: 'relu'}));
+  // model.add(tf.layers.dense({units: 64, activation: 'relu'}));
 
   // Our last layer is a dense layer which has 10 output units, one for each
   // output class (i.e. 0, 1, 2, 3, 4, 5, 6, 7, 8, 9). Here the classes actually
@@ -78,26 +78,6 @@ function createConvModel() {
   // values sum to 1.
   model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
 
-  return model;
-}
-
-/**
- * Creates a model consisting of only flatten, dense and dropout layers.
- *
- * The model create here has approximately the same number of parameters
- * (~31k) as the convnet created by `createConvModel()`, but is
- * expected to show a significantly worse accuracy after training, due to the
- * fact that it doesn't utilize the spatial information as the convnet does.
- *
- * This is for comparison with the convolutional network above.
- *
- * @returns {tf.Model} An instance of tf.Model.
- */
-function createDenseModel() {
-  const model = tf.sequential();
-  model.add(tf.layers.flatten({inputShape: [IMAGE_H, IMAGE_W, 1]}));
-  model.add(tf.layers.dense({units: 42, activation: 'relu'}));
-  model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
   return model;
 }
 
@@ -160,7 +140,7 @@ async function train(model, onIteration) {
   const validationSplit = 0.15;
 
   // Get number of training epochs from the UI.
-  const trainEpochs = 10;
+  const trainEpochs = 1;
 
   // We'll keep a buffer of loss and accuracy values over time.
   let trainBatchCount = 0;
@@ -249,23 +229,40 @@ async function showPredictions(model) {
   });
 }
 
-function createModel() {
-  let model;
-  const modelType = ui.getModelTypeId();
-  if (modelType === 'ConvNet') {
-    model = createConvModel();
-  } else if (modelType === 'DenseNet') {
-    model = createDenseModel();
-  } else {
-    throw new Error(`Invalid model type: ${modelType}`);
-  }
-  return model;
-}
-
 let data;
 async function load() {
   data = new MnistData();
   await data.load();
+}
+
+export function getTestData() {
+  if (data) {
+    const sampleTestData = data.getTestData(100);
+    const xs = sampleTestData.xs.arraySync();
+    const labels = sampleTestData.labels.arraySync();
+    
+    const indices = labels.map(value => {
+      return value.indexOf(1);
+    });
+
+    console.log(indices);
+
+    const range = new Array(10)
+      .fill(0)
+      .map((x, idx) => { return idx });
+
+    const images = range.map(label => {
+      console.log(label);
+
+      const idx = indices.indexOf(label);
+      console.log(idx);
+      return xs[idx];
+    });
+
+    return images;
+  } else {
+    throw new Error('Data not initialized yet.');
+  }
 }
 
 export async function bootstrap() {
@@ -277,17 +274,3 @@ export async function bootstrap() {
   await train(model);
   return model;
 }
-
-// // This is our main function. It loads the MNIST data, trains the model, and
-// // then shows what the model predicted on unseen test data.
-// ui.setTrainButtonCallback(async () => {
-//   ui.logStatus('Loading MNIST data...');
-//   await load();
-
-//   ui.logStatus('Creating model...');
-//   const model = createModel();
-//   model.summary();
-
-//   ui.logStatus('Starting model training...');
-//   await train(model, () => showPredictions(model));
-// });

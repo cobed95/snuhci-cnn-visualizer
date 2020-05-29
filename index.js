@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { MDCSlider } from '@material/slider';
-import { bootstrap } from './nnbootstrap';
+import { bootstrap, getTestData } from './nnbootstrap';
 
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
@@ -66,12 +66,25 @@ const cnn = {
 };
 
 function visualize(model) {
+  const conv1Weights = model.layers[0].getWeights()[0].arraySync();
+  const conv2Weights = model.layers[2].getWeights()[0].arraySync();
+  const fcWeights = model.layers[5].getWeights()[0].arraySync();
+
+  const testData = getTestData();
+
   const svg = d3.select("body")
     .append("svg")
     .attr("width", width)
     .attr("height", height);
 
-  // Conv Layers
+  // Input Layer
+  const input = svg.selectAll(".rect")
+    .data(testData[5])
+    .enter()
+    .append("g")
+    .classed('rect', true);
+
+  // Convolution Filters
   const conv = svg.selectAll(".rect")
     .data(cnn.conv)
     .enter()
@@ -81,6 +94,8 @@ function visualize(model) {
   conv
     .append("text")
     .text("Convolution Layers");
+
+  const imageColorScale = d3.scaleLinear().domain([0, 255]).range(['white', 'black']);
 
   const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
 
