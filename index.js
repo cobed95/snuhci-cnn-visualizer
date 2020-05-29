@@ -66,7 +66,7 @@ const cnn = {
 };
 
 function visualize(model) {
-  const svg = d3.select("body")
+  const svg = d3.select("#d3-container")
     .append("svg")
     .attr("width", width)
     .attr("height", height);
