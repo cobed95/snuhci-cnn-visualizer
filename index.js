@@ -1,14 +1,14 @@
-import * as d3 from 'd3'
-import { ripple, slider } from 'material-components-web'
+import * as d3 from 'd3';
+import { MDCSlider } from '@material/slider';
+import { MDCRipple } from '@material/ripple';
 
 // const { ripple, slider } = mdc;
-const { MDCSlider } = slider;
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
 
-const { MDCRipple } = ripple;
 const playButton = document.querySelector('.mdc-button')
 const playButtonRipple = new MDCRipple(playButton);
+const playButtonClickHandler = () => { console.log('clicked') };
 // playButtonRipple.listen('MDCRipple:onclick', () => console.log(`Value changed to ${playButtonRipple.value}`));
 
 const getEpoch = () => epochSlider.value;
