@@ -183,20 +183,11 @@ function visualize(model) {
 function init() {
   console.log('Bootstrapping');
 
-<<<<<<< HEAD
-  visualize()
-  // bootstrap()
-  //   .then(model => {
-  //     console.log('Bootstrapping finished.');
-  //     visualize(model);
-  //   })
-=======
   bootstrap()
     .then(model => {
       console.log('Bootstrapping finished.');
       visualize(model);
     });
->>>>>>> master
 }
 
 init();
