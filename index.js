@@ -1,4 +1,5 @@
 import * as d3 from 'd3'
+import { bootstrap } from './nnbootstrap';
 import { ripple, slider } from 'material-components-web'
 
 // const { ripple, slider } = mdc;
@@ -15,6 +16,9 @@ const getEpoch = () => epochSlider.value;
 
 const width = 5000;
 const height = 5000;
+
+console.log("Bootstrapping");
+bootstrap();
 
 const cnn = {
   conv: [ 
@@ -54,7 +58,7 @@ const cnn = {
       ]
     }
   ]
-}
+};
 
 const svg = d3.select("body")
   .append("svg")
