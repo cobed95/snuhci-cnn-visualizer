@@ -245,17 +245,12 @@ export function getTestData() {
       return value.indexOf(1);
     });
 
-    console.log(indices);
-
     const range = new Array(10)
       .fill(0)
       .map((x, idx) => { return idx });
 
     const images = range.map(label => {
-      console.log(label);
-
       const idx = indices.indexOf(label);
-      console.log(idx);
       return xs[idx];
     });
 
