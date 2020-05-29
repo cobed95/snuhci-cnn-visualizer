@@ -22,53 +22,107 @@ const increaseEpoch = () => {
 }
 setInterval(increaseEpoch, 1000)
 
-const width = 960;
+const width = 1280;
 const height = 500;
 
-const cnn = {
-  conv: [ 
-    {
-      weights: [
-        [0.0, 0.4, 1.0],
-        [0.35, 0.8, 0.3],
-        [0.2, 0.68, 0.58]
-      ],
-      position: [30, 30]
-    },
-    {
-      weights: [
-        [0.3, 0.4, 1.0],
-        [0.35, 0.8, 0.3],
-        [0.2, 0.68, 0.58]
-      ],
-      position: [110, 30]
-    },
-    {
-      weights: [
-        [0.3, 0.8, 1.0],
-        [1.0, 0.3, 0.3],
-        [0.0, 0.77, 0.58]
-      ],
-      position: [190, 30]
+const constructData = (image, model) => {
+  const conv1Weights = model.layers[0].getWeights()[0].arraySync();
+  const conv2Weights = model.layers[2].getWeights()[0].arraySync();
+  const fcWeights = model.layers[5].getWeights()[0].arraySync();
+
+  const constructInputImage = () => {
+    const width = image.length * 3;
+    const height = image[0].length * 3;
+    const margin = 20;
+
+    return {
+      image: image,
+      position: [width / 2, height / 2],
+      accHeight: height + margin
+    } 
+  }
+
+  const constructConv1 = (accHeight) => {
+    // 3 3 1 8
+    let data = [];
+
+    let width  = 3 * 20;
+    let height = 3 * 20;
+    let margin = 20;
+    let sumWidth = margin;
+
+    for (let fidx = 0; fidx < 8; fidx++) {
+      let weights = new Array(3).fill(0).map(() => new Array(3).fill(0.0));
+
+      for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+          weights[x][y] = conv1Weights[x][y][0][fidx];
+        }
+      }
+
+      let position = [sumWidth + width / 2, accHeight + margin + height / 2];
+      let size = [width, height];
+
+      data.push({ weights, position, size });
+
+      sumWidth += width + margin;
     }
-  ],
-  subsampling: [
-    {
-      weights: [
-        [0.0, 1.0],
-        [0.3, 0.7]
-      ],
-      position: [20, 120]
-    },
-    {
-      weights: [
-        [0.25, 0.95],
-        [0.3, 0.7]
-      ],
-      position: [80, 120]
+
+    return { data: data, accHeight: accHeight + margin + height };
+  }
+
+  const constructConv2 = (accHeight) => {
+    // 3 3 1 16
+    let data = [];
+
+    let width  = 3 * 20;
+    let height = 3 * 20;
+    let margin = 20;
+    let sumWidth = margin;
+
+    for (let fidx = 0; fidx < 16; fidx++) {
+      let weights = new Array(3).fill(0.0).map(() => new Array(3).fill(0.0));
+
+      for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+          weights[x][y] = conv2Weights[x][y][0][fidx];
+        }
+      }
+
+      let position = [sumWidth + width / 2, accHeight + margin + height / 2];
+      let size = [width, height];
+
+      data.push({ weights, position, size });
+
+      sumWidth += width + margin;
     }
-  ]
-};
+
+    return { data: data, accHeight: accHeight + margin + height };
+  }
+
+  const constructFc = (accHeight) => {
+    return { data: [], accHeight: accHeight };
+  }
+
+  const inputConstructionResult = constructInputImage();
+  const conv1ConstructionResult = constructConv1(inputConstructionResult.accHeight);
+  const conv2ConstructionResult = constructConv2(conv1ConstructionResult.accHeight);
+  const fcConstructionResult    = constructFc(conv2ConstructionResult.accHeight);
+
+  const result = {
+    input: {
+      image: inputConstructionResult.image,
+      position: inputConstructionResult.position
+    },
+    conv1: conv1ConstructionResult.data,
+    conv2: conv2ConstructionResult.data,
+    fc: fcConstructionResult.data
+  }
+
+  console.log(result);
+
+  return result;
+}
 
 function visualize(model) {
   const conv1Weights = model.layers[0].getWeights()[0].arraySync();
@@ -77,6 +131,8 @@ function visualize(model) {
 
   const testData = getTestData();
   const inputImage = { image: testData[2] };
+
+  const cnn = constructData(testData[2], model);
 
   const svg = d3.select("#d3-container")
     .append("svg")
@@ -133,8 +189,8 @@ function visualize(model) {
   }
 
   // Conv Layers
-  const conv = g.selectAll(".conv")
-    .data(cnn.conv)
+  const conv1 = g.selectAll(".conv1")
+    .data(cnn.conv1)
     .enter()
     .append("g")
     .classed('rect', true);
@@ -158,17 +214,17 @@ function visualize(model) {
             .attr("fill", d => colorScale(d.weights[row][col]));
         }
       } 
-    })
+    });
   }
 
-  drawRects(conv, 80.0, 100);
+  drawRects(conv1, 80.0, 100);
 
-  const subsampling = g.selectAll(".subsampling")
-    .data(cnn.subsampling)
+  const conv2 = g.selectAll(".conv2")
+    .data(cnn.conv2)
     .enter()
     .append("g");
 
-  drawRects(subsampling, 60.0, 200);
+  drawRects(conv2, 60.0, 350);
 
   Object.assign(svg.node(), {
     zoomIn: () => svg.transition().call(zoom.scaleBy, 2),
