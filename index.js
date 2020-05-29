@@ -2,16 +2,24 @@ import * as d3 from 'd3';
 import { MDCSlider } from '@material/slider';
 import { MDCRipple } from '@material/ripple';
 
-// const { ripple, slider } = mdc;
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
 
+let play = false;
 const playButton = document.querySelector('.mdc-button')
-const playButtonRipple = new MDCRipple(playButton);
-const playButtonClickHandler = () => { console.log('clicked') };
-// playButtonRipple.listen('MDCRipple:onclick', () => console.log(`Value changed to ${playButtonRipple.value}`));
+// const playButtonRipple = new MDCRipple(playButton);
+const playButtonClickHandler = () => { 
+  console.log('clicked') 
+  play = !play
+};
+playButton.addEventListener("click", playButtonClickHandler);
 
-const getEpoch = () => epochSlider.value;
+const increaseEpoch = () => {
+  if (play)
+    epochSlider.value++
+}
+
+setInterval(increaseEpoch, 1000)
 
 const width = 5000;
 const height = 5000;
