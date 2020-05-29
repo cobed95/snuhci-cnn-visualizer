@@ -10,9 +10,14 @@
       margin: 0;
     }
 
+    .spacer {
+      margin: 20;
+    }
+
     .controller-container {
       display: flex;
       flex-direction: row;
+      padding-top: 84px;
     }
 
     .d3-container {
@@ -34,6 +39,7 @@
       </section>
     </div>
   </header>
+  <div class="spacer"></div>
   <div class="controller-container mdc-top-app-bar--fixed-adjust">
     <div class="mdc-touch-target-wrapper">
       <button class="mdc-button mdc-button--touch">
@@ -42,13 +48,16 @@
         <div class="mdc-button__touch"></div>
       </button>
     </div>
-    <div class="mdc-slider" tabindex="0" role="slider"
+    <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-      aria-label="Select Value">
+      aria-label="Select Value" aria-disabled="true">
       <div class="mdc-slider__track-container">
         <div class="mdc-slider__track"></div>
       </div>
       <div class="mdc-slider__thumb-container">
+        <div class="mdc-slider__pin">
+          <span class="mdc-slider__pin-value-marker"></span>
+        </div>
         <svg class="mdc-slider__thumb" width="21" height="21">
           <circle cx="10.5" cy="10.5" r="7.875"></circle>
         </svg>

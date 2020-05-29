@@ -3,7 +3,10 @@ import { MDCSlider } from '@material/slider';
 import { bootstrap } from './nnbootstrap';
 
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
-epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
+epochSlider.listen('MDCSlider:change', (a) => {
+  console.log(a)
+  // console.log(`Value changed to ${epochSlider.value}`)
+});
 
 let play = false;
 const playButton = document.querySelector('.mdc-button');
@@ -156,11 +159,12 @@ function visualize(model) {
 function init() {
   console.log('Bootstrapping');
 
-  bootstrap()
-    .then(model => {
-      console.log('Bootstrapping finished.');
-      visualize(model);
-    })
+  visualize()
+  // bootstrap()
+  //   .then(model => {
+  //     console.log('Bootstrapping finished.');
+  //     visualize(model);
+  //   })
 }
 
 init();
