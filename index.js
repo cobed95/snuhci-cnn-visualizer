@@ -1,42 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<html>
-<head>
-  <title>d3.js grid of squares</title>
-  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-  <!-- <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script> -->
-  <!-- <script src="https://d3js.org/d3.v3.min.js"></script> -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <style type="text/css">
-  </style>
-</head>
-<body>
-  <div display="flex" flex-direction="row">
-    <div class="mdc-touch-target-wrapper">
-      <button class="mdc-button mdc-button--touch">
-        <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">Play</span>
-        <div class="mdc-button__touch"></div>
-      </button>
-    </div>
-    <div class="mdc-slider" tabindex="0" role="slider"
-      aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-      aria-label="Select Value" width="500">
-      <div class="mdc-slider__track-container">
-        <div class="mdc-slider__track"></div>
-      </div>
-      <div class="mdc-slider__thumb-container">
-        <svg class="mdc-slider__thumb" width="21" height="21">
-          <circle cx="10.5" cy="10.5" r="7.875"></circle>
-        </svg>
-        <div class="mdc-slider__focus-ring"></div>
-      </div>
-    </div>
-  </div>
-</body>
-<script src="index.js"></script>
-<!-- <script type="text/javascript">
-const { ripple, slider } = mdc;
+import * as d3 from 'd3'
+import { ripple, slider } from 'material-components-web'
+
+// const { ripple, slider } = mdc;
 const { MDCSlider } = slider;
 const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
 epochSlider.listen('MDCSlider:change', () => console.log(`Value changed to ${epochSlider.value}`));
@@ -107,7 +72,7 @@ conv
   .append("text")
   .text("Convolution Layers");
 
-const colorScale = d3.scale.linear().domain([0.0, 1.0]).range(['white', 'black']);
+const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
 
 cnn.conv.forEach((layer, idx) => {
   const layerAgg = conv.append("g")
@@ -150,6 +115,3 @@ cnn.subsampling.forEach((layer, idx) => {
 
 subsampling
   .attr("transform", d => "translate(" + 0 + "," + 100 + ")");
-
-</script> -->
-</body>
