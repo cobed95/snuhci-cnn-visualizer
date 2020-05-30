@@ -329,24 +329,6 @@ function visualize(model) {
   });
 }
 
-
-// const renderFilters = (model, examples, layerIdx, container, imageSize) => {
-//   const { filters, filterActivations } = getActivationTable(
-//     model,
-//     examples,
-//     layerIdx,
-//     imageSize
-//   );
-
-//   console.log(filterActivations);
-
-//   renderImageTable(
-//     document.getElementById(container),
-//     filters,
-//     filterActivations
-//   );
-// };
-
 function init() {
   console.log('Bootstrapping');
 
