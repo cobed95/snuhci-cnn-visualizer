@@ -134,7 +134,6 @@ export default class Visualizer {
 
     const g = svg.append("g");
 
-
     const zoomed = () => { g.attr("transform", d3.event.transform); };
     const zoom = d3.zoom().scaleExtent([1, 4]).on("zoom", zoomed);
     const width = this.width;
