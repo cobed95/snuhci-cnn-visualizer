@@ -265,12 +265,12 @@ export function getRawData() {
   else throw new Error("Data not initialized yet.");
 }
 
-export async function bootstrap() {
+export async function bootstrap(onIteration) {
   await load();
 
   console.log('Creating CNN...');
   const model = createConvModel();
 
-  await train(model);
+  await train(model, onIteration);
   return model;
 }
