@@ -260,6 +260,11 @@ export function getTestData() {
   }
 }
 
+export function getRawData() {
+  if (data) return data;
+  else throw new Error("Data not initialized yet.");
+}
+
 export async function bootstrap() {
   await load();
 
