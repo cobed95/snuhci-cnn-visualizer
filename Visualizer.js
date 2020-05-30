@@ -12,20 +12,167 @@ export default class Visualizer {
     const trainData = data.getTrainData();
     this.activationExample = trainData.xs.slice([1], [2]);
 
-    this.constructData(model);
+    this.constructValues(model);
     this.initVisualization();
   }
 
+  constructValues(model) {
+    const getImage = () => {
+      const _image = this.activationExample.arraySync()[0];
+      const image = new Array(28).fill(0).map(() => new Array(28));
+      
+      for (let x = 0; x < 28; x++) {
+        for (let y = 0; y < 28; y++) {
+          image[x][y] = _image[y][x];
+        }
+      }
+
+      return image;
+    };
+
+    const getConv1Weights = () => {
+      const rawWeights = model.layers[0].getWeights()[0].arraySync();
+      const conv1Weights = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3)));
+
+      for (let fidx = 0; fidx < 8; fidx++) {
+        for (let x = 0; x < 3; x++) {
+          for (let y = 0; y < 3; y++) {
+            conv1Weights[fidx][x][y] = rawWeights[y][x][0][fidx];
+          }
+        }
+      } 
+
+      return conv1Weights;
+    };
+
+    const getConv2Weights = () => {
+      const rawWeights = model.layers[2].getWeights()[0].arraySync();
+      const conv2Weights = new Array(16).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3)));
+
+      for (let fidx = 0; fidx < 16; fidx++) {
+        for (let x = 0; x < 3; x++) {
+          for (let y = 0; y < 3; y++) {
+            conv2Weights[fidx][x][y] = rawWeights[y][x][0][fidx];
+          }
+        }
+      }
+
+      return conv2Weights;
+    };
+
+    const getConv1Activations = () => {
+      const result = runImage(model, this.activationExample, 0).filterActivations;
+      result.shift();
+      const synced = result.map(tensor => tensor.arraySync());
+      const conv1Activations = new Array(8).fill(0).map(() => new Array(26).fill(0).map(() => new Array(26)));
+
+      console.log(conv1Activations);
+
+      for (let fidx = 0; fidx < 8; fidx++) {
+        for (let x = 0; x < 26; x++) {
+          for (let y = 0; y < 26; y++) {
+            conv1Activations[fidx][x][y] = synced[fidx][y][x];
+          }
+        }
+      } 
+
+      return conv1Activations;
+    };
+
+    const getConv2Activations = () => {
+      const result = runImage(model, this.activationExample, 2).filterActivations;
+      result.shift();
+      const synced = result.map(tensor => tensor.arraySync());
+      const conv2Activations = new Array(16).fill(0).map(() => new Array(11).fill(0).map(() => new Array(11)));
+
+      console.log(conv2Activations);
+
+      for (let fidx = 0; fidx < 16; fidx++) {
+        for (let x = 0; x < 11; x++) {
+          for (let y = 0; y < 11; y++) {
+            conv2Activations[fidx][x][y] = synced[fidx][y][x];
+          }
+        }
+      } 
+
+      return conv2Activations;
+    };
+
+    const constructRects = (image, conv1Weights, conv1Activations, conv2Weights, conv2Activations) => {
+      const BASE_SIZE = 110.0;
+      const visLayers = [];
+      const rects = [];
+
+      visLayers.push([[image], 3]);
+      visLayers.push([conv1Weights, 20]);
+      visLayers.push([conv1Activations, 3]);
+      visLayers.push([conv2Weights, 20]);
+      visLayers.push([conv2Activations, 3]);
+
+      let pivotY = 0.0;
+
+      for (let i = 0; i < visLayers.length; i++) {
+        const visLayer = visLayers[i];
+
+        let pivotX = 0.0;
+        let grids = visLayer[0];
+        let cellSize = visLayer[1];
+
+        let n = grids[0].length;
+        let size = n * cellSize;
+
+        let marginDiff = (BASE_SIZE - size) / 2.0;
+
+        for (let g = 0; g < grids.length; g++) {
+          const grid = grids[g];
+
+          let x0 = pivotX + marginDiff;
+          let y0 = pivotY + marginDiff;
+
+          for (let x = 0; x < grid.length; x++) {
+            for (let y = 0; y < grid[x].length; y++) {
+              const xc = x0 + x * cellSize;
+              const yc = y0 + y * cellSize;
+
+              let rect = {
+                x: xc,
+                y: yc,
+                width: cellSize,
+                height: cellSize
+              };
+
+              rects.push(rect);
+            }
+          }
+          pivotX += BASE_SIZE;
+        } 
+
+        pivotY += BASE_SIZE;
+      }
+      
+      return rects;
+    };
+
+    const image = getImage();
+    const conv1Weights = getConv1Weights();
+    const conv1Activations = getConv1Activations();
+    const conv2Weights = getConv2Weights();
+    const conv2Activations = getConv2Activations();
+    const rects = constructRects(image, conv1Weights, conv1Activations, conv2Weights, conv2Activations);
+
+    this.input = image;
+    this.conv1 = conv1Weights;
+    this.act1  = conv1Activations;
+    this.conv2 = conv2Weights;
+    this.act2  = conv2Activations;
+    this.fc    = undefined;
+    this.rects = rects;
+  } 
+
   constructData(model) {
     const convIdx = [0, 2]
-    // Compute Neural Network Weights
-    const convWeights = convIdx.map(idx => model.layers[idx].getWeights()[0].arraySync());
-    // const conv1Weights = model.layers[0].getWeights()[0].arraySync();
-    // const conv2Weights = model.layers[2].getWeights()[0].arraySync();
 
-    // Compute activation values for given this.activationExample
-    // const conv1ActivationsTensors = runImage(model, this.activationExample, 0).filterActivations;
-    // const conv2ActivationsTensors = runImage(model, this.activationExample, 2).filterActivations;
+    const convWeights = convIdx.map(idx => model.layers[idx].getWeights()[0].arraySync());
     const convActivationsTensors = convIdx.map(i => runImage(model, this.activationExample, i).filterActivations);
     convActivationsTensors.forEach(tensors => { tensors.shift(); });
 
@@ -54,7 +201,7 @@ export default class Visualizer {
       let margin = 20;
       let sumWidth = margin;
 
-      for (let fidx = 0; fidx < 8; fidx++) {
+      for (let fidx = 0; fidx < convWeights[0][0][0].length; fidx++) {
         let weights = Array(3).fill(0).map(() => new Array(3).fill(0.0));
 
         for (let x = 0; x < 3; x++) {
@@ -249,7 +396,7 @@ export default class Visualizer {
   }
 
   update(model) {
-    this.constructData(model);
+    this.constructValues(model);
     const updateRects = (layer, h, v, width, height) => {
       console.log(layer.nodes())
       layer.each(function(p, j) {
