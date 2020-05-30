@@ -319,6 +319,7 @@ const renderImageTable = (container, headerData, data) => {
     .select("tr")
     .selectAll("th")
     .data(headerData);
+
   const headersEnter = headers.enter().append("th");
   headers.merge(headersEnter).each((d, i, group) => {
     const node = group[i];
@@ -332,16 +333,21 @@ const renderImageTable = (container, headerData, data) => {
       });
     }
   });
+
   const rows = table
     .select("tbody")
     .selectAll("tr")
     .data(data);
+
   const rowsEnter = rows.enter().append("tr");
+
   const cells = rows
     .merge(rowsEnter)
     .selectAll("td")
     .data(d => d);
+
   const cellsEnter = cells.enter().append("td");
+  
   cells.merge(cellsEnter).each((d, i, group) => {
     const node = group[i];
     renderImage(node, d, {
@@ -349,6 +355,7 @@ const renderImageTable = (container, headerData, data) => {
       height: 40
     });
   });
+
   cells.exit().remove();
   rows.exit().remove();
 };
