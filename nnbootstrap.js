@@ -1,5 +1,3 @@
-import ModelController from './ModelController'
-
 /**
  * @license
  * Copyright 2018 Google LLC. All Rights Reserved.
@@ -267,13 +265,11 @@ export function getRawData() {
   else throw new Error("Data not initialized yet.");
 }
 
-export async function bootstrap(container) {
+export async function bootstrap() {
   await load();
 
   console.log('Creating CNN...');
   const model = createConvModel();
 
-  // await train(model, controller);
-  const modelController = new ModelController(model, data, container);
-  return modelController;
+  return model;
 }

@@ -1,13 +1,14 @@
+import * as d3 from 'd3';
 import { MDCSlider } from '@material/slider';
 import { 
   optimizer, 
   batchSize, 
   validationSplit, 
   trainEpochs 
-} from './parameters'
+} from './parameters';
 
 export default class ModelController {
-  constructor(model, data, container) {
+  constructor(model, data, container, visualizer) {
     model.compile({
       optimizer,
       loss: 'categoricalCrossentropy',
@@ -41,6 +42,8 @@ export default class ModelController {
       Math.ceil(this.trainData.xs.shape[0] * (1 - validationSplit) / batchSize) *
       trainEpochs;
     this.progressSlider.max = totalNumBatches;
+
+    this.visualizer = visualizer;
   }
 
   getBatches(isData) {
@@ -65,7 +68,9 @@ export default class ModelController {
         onBatchEnd: function (batch, logs) {
           console.log(batch);
           console.log('batch', that.progressSlider.value, 'done');
-          that.progressSlider.stepUp();
+          if (!that.model.stopTraining)
+            that.progressSlider.stepUp();
+          that.visualizer.update(that.model);
         },
         onEpochEnd: function (epoch, logs) {
           that.valAcc = logs.val_acc
