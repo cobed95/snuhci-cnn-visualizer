@@ -10,7 +10,8 @@ export default class Visualizer {
     this.height = 500;
 
     const trainData = data.getTrainData();
-    this.activationExample = trainData.xs.slice([1], [2]);
+    this.activationExampleArr = trainData.xs.slice([0], [10]);
+    this._activationExample = this.activationExampleArr.slice([0], [1]);
 
     this.constructValues(model);
     this.initVisualization();
@@ -18,7 +19,7 @@ export default class Visualizer {
 
   constructValues(model) {
     const getImage = () => {
-      const _image = this.activationExample.arraySync()[0];
+      const _image = this._activationExample.arraySync()[0];
       const image = new Array(28).fill(0).map(() => new Array(28));
       
       for (let x = 0; x < 28; x++) {
@@ -61,7 +62,7 @@ export default class Visualizer {
     };
 
     const getConv1Activations = () => {
-      const result = runImage(model, this.activationExample, 0).filterActivations;
+      const result = runImage(model, this._activationExample, 0).filterActivations;
       result.shift();
       const synced = result.map(tensor => tensor.arraySync());
       const conv1Activations = new Array(8).fill(0).map(() => new Array(26).fill(0).map(() => new Array(26)));
@@ -78,7 +79,7 @@ export default class Visualizer {
     };
 
     const getConv2Activations = () => {
-      const result = runImage(model, this.activationExample, 2).filterActivations;
+      const result = runImage(model, this._activationExample, 2).filterActivations;
       result.shift();
       const synced = result.map(tensor => tensor.arraySync());
       const conv2Activations = new Array(16).fill(0).map(() => new Array(11).fill(0).map(() => new Array(11)));
@@ -170,13 +171,13 @@ export default class Visualizer {
     const convIdx = [0, 2]
 
     const convWeights = convIdx.map(idx => model.layers[idx].getWeights()[0].arraySync());
-    const convActivationsTensors = convIdx.map(i => runImage(model, this.activationExample, i).filterActivations);
+    const convActivationsTensors = convIdx.map(i => runImage(model, this._activationExample, i).filterActivations);
     convActivationsTensors.forEach(tensors => { tensors.shift(); });
 
     const convActivations = convActivationsTensors.map(tensors => 
       tensors.map(tensor => tensor.arraySync()));
 
-    const image = this.activationExample.arraySync()[0];
+    const image = this._activationExample.arraySync()[0];
 
     const constructInputImage = () => {
       const width = image.length * 3;
@@ -427,5 +428,17 @@ export default class Visualizer {
 
         return colorScale(d.weight)
       });
+  }
+
+  get activationExample() {
+    return this._activationExample
+  }
+
+  /**
+   * @param {number} idx
+   */
+  set activationExample(idx) {
+    this._activationExample = this.activationExampleArr
+      .slice([idx], [idx + 1]);
   }
 }
