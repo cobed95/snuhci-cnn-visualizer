@@ -1,11 +1,10 @@
 import * as d3 from 'd3';
 import * as tf from '@tensorflow/tfjs';
-import { MDCSlider } from '@material/slider';
 import { bootstrap, getTestData, getRawData } from './nnbootstrap';
-import { IMAGE_H, IMAGE_W } from './data'
-import Controller from './controller'
+import { IMAGE_H } from './data'
 
-const controller = new Controller(document.getElementsByClassName("controller-container"));
+// const controller = new Controller(document.getElementsByClassName("controller-container"));
+const container = document.getElementsByClassName("controller-container");
 
 const width = 960;
 const height = 500;
@@ -295,7 +294,7 @@ const renderFilters = (model, examples, layerIdx, container, imageSize) => {
 function init() {
   console.log('Bootstrapping');
 
-  bootstrap()
+  bootstrap(container)
     .then(model => {
       console.log('Bootstrapping finished.');
       visualize(model);

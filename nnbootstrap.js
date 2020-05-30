@@ -1,3 +1,5 @@
+import ModelController from './ModelController'
+
 /**
  * @license
  * Copyright 2018 Google LLC. All Rights Reserved.
@@ -98,7 +100,7 @@ function createConvModel() {
  * @param {onIterationCallback} onIteration A callback to execute every 10
  *     batches & epoch end.
  */
-async function train(model, onIteration) {
+async function train(model, controller) {
   ui.logStatus('Training model...');
 
   // Now that we've defined our model, we will define our optimizer. The
@@ -169,8 +171,8 @@ async function train(model, onIteration) {
             ` complete). To stop training, refresh or close page.`);
         ui.plotLoss(trainBatchCount, logs.loss, 'train');
         ui.plotAccuracy(trainBatchCount, logs.acc, 'train');
-        if (onIteration && batch % 10 === 0) {
-          onIteration('onBatchEnd', batch, logs);
+        if (controller) {
+          controller.onIteration('onBatchEnd', batch, logs, totalNumBatches, model);
         }
         await tf.nextFrame();
       },
@@ -178,8 +180,8 @@ async function train(model, onIteration) {
         valAcc = logs.val_acc;
         ui.plotLoss(trainBatchCount, logs.val_loss, 'validation');
         ui.plotAccuracy(trainBatchCount, logs.val_acc, 'validation');
-        if (onIteration) {
-          onIteration('onEpochEnd', epoch, logs);
+        if (controller) {
+          controller.onIteration('onEpochEnd', epoch, logs);
         }
         await tf.nextFrame();
       }
@@ -265,12 +267,13 @@ export function getRawData() {
   else throw new Error("Data not initialized yet.");
 }
 
-export async function bootstrap(onIteration) {
+export async function bootstrap(container) {
   await load();
 
   console.log('Creating CNN...');
   const model = createConvModel();
 
-  await train(model, onIteration);
+  // await train(model, controller);
+  const modelController = new ModelController(model, data, container);
   return model;
 }
