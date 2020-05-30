@@ -3,29 +3,9 @@ import * as tf from '@tensorflow/tfjs';
 import { MDCSlider } from '@material/slider';
 import { bootstrap, getTestData, getRawData } from './nnbootstrap';
 import { IMAGE_H, IMAGE_W } from './data'
+import Controller from './controller'
 
-const epochSlider = new MDCSlider(document.querySelector('.mdc-slider'));
-epochSlider.listen('MDCSlider:change', (a) => {
-  console.log(a)
-  // console.log(`Value changed to ${epochSlider.value}`)
-});
-
-let play = false;
-const playButton = document.querySelector('.mdc-button');
-const playButtonClickHandler = () => { 
-  play = !play;
-  if (play)
-    playButton.textContent = "pause";
-  else
-    playButton.textContent = "play";
-};
-playButton.addEventListener("click", playButtonClickHandler);
-
-const increaseEpoch = () => {
-  if (play)
-    epochSlider.value++
-}
-setInterval(increaseEpoch, 1000)
+const controller = new Controller(document.getElementsByClassName("controller-container"));
 
 const width = 960;
 const height = 500;
