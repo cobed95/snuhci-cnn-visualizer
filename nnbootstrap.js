@@ -275,5 +275,5 @@ export async function bootstrap(container) {
 
   // await train(model, controller);
   const modelController = new ModelController(model, data, container);
-  return model;
+  return modelController;
 }
