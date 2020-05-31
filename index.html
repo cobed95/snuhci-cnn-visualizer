@@ -6,14 +6,25 @@
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <style type="text/css">
-    .app {
+    html {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      min-height: 100%;
       margin: 0;
+    }
+
+    .loading {
+      margin: auto;
+      text-align: center;
+      line-height: 50;
     }
 
     .controller-container {
       display: flex;
       flex-direction: column;
-      padding-top: 84px;
       padding-right: 10px;
     }
 
@@ -25,9 +36,89 @@
     .d3-container {
       margin: 10px;
     }
+
+    @keyframes ldio-a1j3icknood {
+      0% { opacity: 1 }
+      100% { opacity: 0 }
+    }
+    .ldio-a1j3icknood div {
+      left: 94px;
+      top: 48px;
+      position: absolute;
+      animation: ldio-a1j3icknood linear 1s infinite;
+      background: #6200ee;
+      width: 12px;
+      height: 24px;
+      border-radius: 6px / 12px;
+      transform-origin: 6px 52px;
+    }.ldio-a1j3icknood div:nth-child(1) {
+      transform: rotate(0deg);
+      animation-delay: -0.9166666666666666s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(2) {
+      transform: rotate(30deg);
+      animation-delay: -0.8333333333333334s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(3) {
+      transform: rotate(60deg);
+      animation-delay: -0.75s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(4) {
+      transform: rotate(90deg);
+      animation-delay: -0.6666666666666666s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(5) {
+      transform: rotate(120deg);
+      animation-delay: -0.5833333333333334s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(6) {
+      transform: rotate(150deg);
+      animation-delay: -0.5s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(7) {
+      transform: rotate(180deg);
+      animation-delay: -0.4166666666666667s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(8) {
+      transform: rotate(210deg);
+      animation-delay: -0.3333333333333333s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(9) {
+      transform: rotate(240deg);
+      animation-delay: -0.25s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(10) {
+      transform: rotate(270deg);
+      animation-delay: -0.16666666666666666s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(11) {
+      transform: rotate(300deg);
+      animation-delay: -0.08333333333333333s;
+      background: #6200ee;
+    }.ldio-a1j3icknood div:nth-child(12) {
+      transform: rotate(330deg);
+      animation-delay: 0s;
+      background: #6200ee;
+    }
+    .loadingio-spinner-spinner-x78m4kbh62 {
+      width: 200px;
+      height: 200px;
+      display: inline-block;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .ldio-a1j3icknood {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform: translateZ(0) scale(1);
+      backface-visibility: hidden;
+      transform-origin: 0 0; /* see note above */
+    }
+    .ldio-a1j3icknood div { box-sizing: content-box; }
   </style>
 </head>
-<body class="app">
+<body>
   <header class="mdc-top-app-bar">
     <div class="mdc-top-app-bar__row">
       <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
@@ -41,79 +132,84 @@
       </section>
     </div>
   </header>
-  <div class="controller-container mdc-top-app-bar--fixed-adjust">
-    <div class="mdc-select">
-      <div class="mdc-select__anchor demo-width-class">
-        <span class="mdc-select__ripple"></span>
-        <input type="text" disabled readonly class="mdc-select__selected-text">
-        <i class="mdc-select__dropdown-icon"></i>
-        <span class="mdc-floating-label">Pick an example</span>
-        <span class="mdc-line-ripple"></span>
-      </div>
-    
-      <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
-        <ul class="mdc-list">
-          <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="1">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="1">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="fruit">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="grains">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="grains">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="grains">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="grains">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="grains">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-          <li class="mdc-list-item" data-value="grains">
-            <span class="mdc-list-item__graphic"></span>
-          </li>
-        </ul>
-      </div>
-    </div> 
-    <div class="play-progress-container">
-      <div class="mdc-touch-target-wrapper">
-        <button class="mdc-button mdc-button--touch">
-          <div class="mdc-button__ripple"></div>
-          <span class="mdc-button__label">Play</span>
-          <div class="mdc-button__touch"></div>
-        </button>
-      </div>
-      <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
-        aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-        aria-label="Select Value" aria-disabled="true">
-        <div class="mdc-slider__track-container">
-          <div class="mdc-slider__track"></div>
+  <div id="loading" class="loading">
+    <div class="loadingio-spinner-spinner-x78m4kbh62"><div class="ldio-a1j3icknood">
+      <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+      </div></div>
+  </div>
+  <div id="cnn-visualizer" class="mdc-top-app-bar--fixed-adjust" style="display: none">
+    <div class="controller-container">
+      <div class="mdc-select">
+        <div class="mdc-select__anchor demo-width-class">
+          <span class="mdc-select__ripple"></span>
+          <input type="text" disabled readonly class="mdc-select__selected-text">
+          <i class="mdc-select__dropdown-icon"></i>
+          <span class="mdc-floating-label">Pick an example</span>
+          <span class="mdc-line-ripple"></span>
         </div>
-        <div class="mdc-slider__thumb-container">
-          <div class="mdc-slider__pin">
-            <span class="mdc-slider__pin-value-marker"></span>
+      
+        <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
+          <ul class="mdc-list">
+            <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="1">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="1">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="fruit">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="grains">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="grains">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="grains">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="grains">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="grains">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+            <li class="mdc-list-item" data-value="grains">
+              <span class="mdc-list-item__graphic"></span>
+            </li>
+          </ul>
+        </div>
+      </div> 
+      <div class="play-progress-container">
+        <div class="mdc-touch-target-wrapper">
+          <button class="mdc-button mdc-button--touch">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Play</span>
+            <div class="mdc-button__touch"></div>
+          </button>
+        </div>
+        <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
+          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+          aria-label="Select Value" aria-disabled="true">
+          <div class="mdc-slider__track-container">
+            <div class="mdc-slider__track"></div>
           </div>
-          <svg class="mdc-slider__thumb" width="21" height="21">
-            <circle cx="10.5" cy="10.5" r="7.875"></circle>
-          </svg>
-          <div class="mdc-slider__focus-ring"></div>
+          <div class="mdc-slider__thumb-container">
+            <div class="mdc-slider__pin">
+              <span class="mdc-slider__pin-value-marker"></span>
+            </div>
+            <svg class="mdc-slider__thumb" width="21" height="21">
+              <circle cx="10.5" cy="10.5" r="7.875"></circle>
+            </svg>
+            <div class="mdc-slider__focus-ring"></div>
+          </div>
         </div>
       </div>
     </div>
+    <div id="d3-container" class="d3-container"></div>
   </div>
-  <div id="d3-container" class="d3-container"></div>
-  <div id="layer-0-filters"></div>
-  <div id="layer-2-filters"></div>
 </body>
 <script src="index.js"></script>
