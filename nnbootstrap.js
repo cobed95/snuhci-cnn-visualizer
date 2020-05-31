@@ -98,7 +98,7 @@ function createConvModel() {
  * @param {onIterationCallback} onIteration A callback to execute every 10
  *     batches & epoch end.
  */
-async function train(model, onIteration) {
+async function train(model, controller) {
   ui.logStatus('Training model...');
 
   // Now that we've defined our model, we will define our optimizer. The
@@ -169,8 +169,8 @@ async function train(model, onIteration) {
             ` complete). To stop training, refresh or close page.`);
         ui.plotLoss(trainBatchCount, logs.loss, 'train');
         ui.plotAccuracy(trainBatchCount, logs.acc, 'train');
-        if (onIteration && batch % 10 === 0) {
-          onIteration('onBatchEnd', batch, logs);
+        if (controller) {
+          controller.onIteration('onBatchEnd', batch, logs, totalNumBatches, model);
         }
         await tf.nextFrame();
       },
@@ -178,8 +178,8 @@ async function train(model, onIteration) {
         valAcc = logs.val_acc;
         ui.plotLoss(trainBatchCount, logs.val_loss, 'validation');
         ui.plotAccuracy(trainBatchCount, logs.val_acc, 'validation');
-        if (onIteration) {
-          onIteration('onEpochEnd', epoch, logs);
+        if (controller) {
+          controller.onIteration('onEpochEnd', epoch, logs);
         }
         await tf.nextFrame();
       }
@@ -271,6 +271,5 @@ export async function bootstrap() {
   console.log('Creating CNN...');
   const model = createConvModel();
 
-  await train(model);
   return model;
 }
