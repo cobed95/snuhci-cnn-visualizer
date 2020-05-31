@@ -17,12 +17,15 @@ body {
 .controller-container {
   display: flex;
   flex-direction: column;
+  padding-top: 10px;
   padding-right: 10px;
+  padding-left: 10px;
 }
 
 .play-progress-container {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .d3-container {
