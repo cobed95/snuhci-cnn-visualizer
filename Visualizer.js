@@ -1,8 +1,9 @@
 import * as d3 from "d3";
 import { getRawData } from './nnbootstrap'
-import { runImage } from './activation'
+import { runImage, getActivation } from './activation'
 
 const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
+const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range(['red', 'green']);
 
 export default class Visualizer {
   constructor(model, data) {
@@ -97,8 +98,25 @@ export default class Visualizer {
       return conv2Activations;
     };
 
+    const constructSubsamplingOutputs = () => {
+      const outputs = getActivation(this._activationExample, model, model.layers[3]);
+      return outputs.arraySync()[0];
+    };
+
+    const constructFcWeights = () => {
+      const rawWeights = model.layers[5].getWeights()[0].arraySync();
+
+      return rawWeights;
+    };
+
+    const constructFcActivations = () => {
+      const prediction = model.predict(this._activationExample);
+      return prediction.arraySync()[0];
+    };
+
+    const BASE_SIZE = 110.0;
+
     const constructRects = (image, conv1Weights, conv1Activations, conv2Weights, conv2Activations) => {
-      const BASE_SIZE = 110.0;
       const visLayers = [];
       const rects = [];
 
@@ -153,20 +171,97 @@ export default class Visualizer {
       return rects;
     };
 
+    const constructCirclesAndLinks = (subsamplingOutputs, fcWeights, fcActivations) => {
+      let pivotY = 550.0;
+      let pivotX = 0.0;
+
+      const margin = 20.0;
+
+      const circles = [];
+      const flattened = [];
+      const output = [];
+      const links = [];
+
+      for (let fidx = 0; fidx < 16; fidx++) {
+        for (let x = 0; x < 5; x++) {
+          for (let y = 0; y < 5; y++) {
+            const xc = pivotX + margin + x * 18;
+            const yc = pivotY + margin + y * 18;
+            
+            const weight = subsamplingOutputs[y][x][fidx];
+
+            const circle = {
+              cx: xc, 
+              cy: yc,
+              weight: weight,
+              r: 8
+            };
+            
+            circles.push(circle);
+            flattened.push(circle);
+          }
+        }
+
+        pivotX += BASE_SIZE;
+      }
+      
+      pivotX = 88.0;
+      pivotY += 5 * BASE_SIZE;
+
+      for (let i = 0; i < 10; i++) {
+        const circle = {
+          cx: pivotX,
+          cy: pivotY + 55.0,
+          r: 20,
+          weight: fcActivations[i]
+        };
+
+        circles.push(circle);
+        output.push(circle);
+
+        pivotX += 176.0;
+      }
+
+      for (let i = 0; i < fcWeights.length; i++) {
+        for (let j = 0; j < 10; j++) {
+          const link = {
+            x1: flattened[i].cx,
+            y1: flattened[i].cy,
+            x2: output[j].cx,
+            y2: output[j].cy,
+            weight: fcWeights[i][j]
+          };
+
+          links.push(link);
+        }
+      }
+
+      return { circles, links };
+    };
+
     const image = getImage();
     const conv1Weights = getConv1Weights();
     const conv1Activations = getConv1Activations();
     const conv2Weights = getConv2Weights();
     const conv2Activations = getConv2Activations();
+    const subsamplingOutputs = constructSubsamplingOutputs();
+    const fcWeights = constructFcWeights();
+    const fcActivations = constructFcActivations();
+
     const rects = constructRects(image, conv1Weights, conv1Activations, conv2Weights, conv2Activations);
+    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs, fcWeights, fcActivations);
 
     this.input = image;
     this.conv1 = conv1Weights;
     this.act1  = conv1Activations;
     this.conv2 = conv2Weights;
     this.act2  = conv2Activations;
-    this.fc    = undefined;
+    this.fc    = fcWeights;
+    this.act3  = fcActivations;
+
     this.rects = rects;
+    this.circles = circles;
+    this.links = links;
   } 
 
   initVisualization() {
@@ -192,6 +287,26 @@ export default class Visualizer {
 
         return colorScale(d.weight)
       });
+
+    g.selectAll("line")
+      .data(this.links)
+      .enter()
+      .append("line")
+      .attr("x1", d => d.x1)
+      .attr("y1", d => d.y1)
+      .attr("x2", d => d.x2)
+      .attr("y2", d => d.y2)
+      .attr("stroke", "gray");
+
+    g.selectAll("circle")
+      .data(this.circles)
+      .enter()
+      .append("circle")
+      .attr("cx", d => d.cx)
+      .attr("cy", d => d.cy)
+      .attr("r", d => d.r)
+      .attr("stroke", "gray")
+      .attr("fill", d => colorScale(d.weight));
   }
 
   update(model) {
@@ -211,6 +326,15 @@ export default class Visualizer {
 
         return colorScale(d.weight)
       });
+
+    d3.select("#model-container")
+      .selectAll("circle")
+      .data(this.circles)
+      .attr("cx", d => d.cx)
+      .attr("cy", d => d.cy)
+      .attr("r", d => d.r)
+      .attr("stroke", "gray")
+      .attr("fill", d => colorScale(d.weight));
   }
 
   get activationExample() {

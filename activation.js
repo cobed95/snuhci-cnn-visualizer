@@ -44,7 +44,7 @@ function getActivationTable(model, examples, layerIdx, imageSize) {
   };
 };
 
-const getActivation = (input, model, layer) => {
+export const getActivation = (input, model, layer) => {
   const activationModel = tf.model({
     inputs: model.input,
     outputs: layer.output
