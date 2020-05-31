@@ -10,15 +10,16 @@
       margin: 0;
     }
 
-    .spacer {
-      margin: 20;
-    }
-
     .controller-container {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       padding-top: 84px;
       padding-right: 10px;
+    }
+
+    .play-progress-container {
+      display: flex;
+      flex-direction: row;
     }
 
     .d3-container {
@@ -40,29 +41,74 @@
       </section>
     </div>
   </header>
-  <div class="spacer"></div>
   <div class="controller-container mdc-top-app-bar--fixed-adjust">
-    <div class="mdc-touch-target-wrapper">
-      <button class="mdc-button mdc-button--touch">
-        <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">Play</span>
-        <div class="mdc-button__touch"></div>
-      </button>
-    </div>
-    <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
-      aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-      aria-label="Select Value" aria-disabled="true">
-      <div class="mdc-slider__track-container">
-        <div class="mdc-slider__track"></div>
+    <div class="mdc-select">
+      <div class="mdc-select__anchor demo-width-class">
+        <span class="mdc-select__ripple"></span>
+        <input type="text" disabled readonly class="mdc-select__selected-text">
+        <i class="mdc-select__dropdown-icon"></i>
+        <span class="mdc-floating-label">Pick an example</span>
+        <span class="mdc-line-ripple"></span>
       </div>
-      <div class="mdc-slider__thumb-container">
-        <div class="mdc-slider__pin">
-          <span class="mdc-slider__pin-value-marker"></span>
+    
+      <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
+        <ul class="mdc-list">
+          <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="1">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="1">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="fruit">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="grains">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="grains">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="grains">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="grains">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="grains">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+          <li class="mdc-list-item" data-value="grains">
+            <span class="mdc-list-item__graphic"></span>
+          </li>
+        </ul>
+      </div>
+    </div> 
+    <div class="play-progress-container">
+      <div class="mdc-touch-target-wrapper">
+        <button class="mdc-button mdc-button--touch">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Play</span>
+          <div class="mdc-button__touch"></div>
+        </button>
+      </div>
+      <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+        aria-label="Select Value" aria-disabled="true">
+        <div class="mdc-slider__track-container">
+          <div class="mdc-slider__track"></div>
         </div>
-        <svg class="mdc-slider__thumb" width="21" height="21">
-          <circle cx="10.5" cy="10.5" r="7.875"></circle>
-        </svg>
-        <div class="mdc-slider__focus-ring"></div>
+        <div class="mdc-slider__thumb-container">
+          <div class="mdc-slider__pin">
+            <span class="mdc-slider__pin-value-marker"></span>
+          </div>
+          <svg class="mdc-slider__thumb" width="21" height="21">
+            <circle cx="10.5" cy="10.5" r="7.875"></circle>
+          </svg>
+          <div class="mdc-slider__focus-ring"></div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,4 +1,6 @@
+import * as tf from '@tensorflow/tfjs';
 import { MDCSlider } from '@material/slider';
+import { MDCSelect } from '@material/select';
 import { 
   optimizer, 
   batchSize, 
@@ -7,7 +9,8 @@ import {
 } from './parameters';
 
 export default class ModelController {
-  constructor(model, data, container, visualizer) {
+  constructor(model, data, visualizer) {
+    // Compile tf model and set initialize variables.
     model.compile({
       optimizer,
       loss: 'categoricalCrossentropy',
@@ -18,11 +21,52 @@ export default class ModelController {
     this.testData = data.getTestData();
     this.valAcc = 0;
 
-    const { children } = container.item(0);
-    const buttonWrapper = children.item(0);
-    this.playButton = buttonWrapper.children.item(0);
+    // Set visualizer.
+    this.visualizer = visualizer;
+    
+    // Initialize and set DOM elements and related variables.
+    const select = document.querySelector(".mdc-select");
+    this.activationExampleSelect = new MDCSelect(select);
+
+    this.playButton = document.querySelector(".mdc-button");
     this.play = false;
+
+    const slider = document.querySelector(".mdc-slider");
+    this.progressSlider = new MDCSlider(slider);
+
+    // Draw examples to the MDCSelect element.
+    const listItemContents = Array.from(document.getElementsByClassName("mdc-list-item__graphic"))
+    const { activationExampleArr } = this.visualizer;
+    
+    const draw = async () => {
+      for (let i = 0; i < 10; i++) {
+        const imageTensor = tf.tidy(() => {
+          // Reshape the image to 28x28 px
+          return activationExampleArr.slice([i, 0], [1, activationExampleArr.shape[1]])
+            .reshape([28, 28, 1]);
+        });
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 28;
+        canvas.height = 28;
+        canvas.style = 'margin: 4px;';
+        await tf.browser.toPixels(imageTensor, canvas);
+        listItemContents[i].appendChild(canvas);
+    
+        imageTensor.dispose();
+      }
+    }
+
+    draw();
+    
+    // Set reference to this object for scoping.
     const that = this;
+
+    // Set event listeners.
+    this.activationExampleSelect.listen("MDCSelect:change", () => {
+      that.visualizer.activationExample = that.activationExampleSelect.selectedIndex;
+    });
+
     this.playButton.addEventListener("click", () => {
       that.play = !that.play
       if (that.play) {
@@ -34,15 +78,10 @@ export default class ModelController {
       }
     })
 
-    const slider = children.item(1);
-    this.progressSlider = new MDCSlider(slider);
-    
     const totalNumBatches =
       Math.ceil(this.trainData.xs.shape[0] * (1 - validationSplit) / batchSize) *
       trainEpochs;
     this.progressSlider.max = totalNumBatches;
-
-    this.visualizer = visualizer;
   }
 
   getBatches(isData) {
