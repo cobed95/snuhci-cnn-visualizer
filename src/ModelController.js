@@ -33,6 +33,8 @@ export default class ModelController {
 
     const slider = document.querySelector(".mdc-slider");
     this.progressSlider = new MDCSlider(slider);
+    this.progressSlider.layout();
+    this.progressSlider.value = 0;
 
     // Draw examples to the MDCSelect element.
     const listItemContents = Array.from(document.getElementsByClassName("mdc-list-item__graphic"))
