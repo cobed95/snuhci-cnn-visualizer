@@ -7,8 +7,8 @@ const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range(['red', 'green']);
 
 export default class Visualizer {
   constructor(model, data) {
-    this.width = 5000;
-    this.height = 5000;
+    this.width = 1300;
+    this.height = 500;
 
     this.model = model;
 
@@ -265,12 +265,34 @@ export default class Visualizer {
   } 
 
   initVisualization() {
+    const width = this.width;
+    const height = this.height;
+
+    const zoom = d3.zoom()
+      .scaleExtent([1, 40])
+      .on("zoom", zoomed);
+
     const svg = d3.select("#d3-container")
       .append("svg")
-      .attr("width", this.width)
-      .attr("height", this.height);
+      .call(zoom)
+      .attr("width", width)
+      .attr("height", height)
+      .on("click", reset);
 
     const g = svg.append("g").attr("id", "model-container");
+
+    function zoomed() {
+      g.attr("transform", d3.event.transform);
+    }
+
+    function reset() {
+      console.log("Reset");
+      svg.transition().duration(750).call(
+        zoom.transform,
+        d3.zoomIdentity,
+        d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
+      );
+    }  
 
     g.selectAll("rect")
       .data(this.rects)
