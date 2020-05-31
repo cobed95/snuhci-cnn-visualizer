@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { MDCSlider } from '@material/slider';
+import { MDCLinearProgress } from '@material/linear-progress';
 import { MDCSelect } from '@material/select';
 import { 
   optimizer, 
@@ -31,10 +31,9 @@ export default class ModelController {
     this.playButton = document.querySelector(".mdc-button");
     this.play = false;
 
-    const slider = document.querySelector(".mdc-slider");
-    this.progressSlider = new MDCSlider(slider);
-    this.progressSlider.layout();
-    this.progressSlider.value = 0;
+    const linearProgress = document.querySelector(".mdc-linear-progress");
+    this.progressBar = new MDCLinearProgress(linearProgress);
+    this.progress = 0;
 
     // Draw examples to the MDCSelect element.
     const listItemContents = Array.from(document.getElementsByClassName("mdc-list-item__graphic"))
@@ -80,16 +79,15 @@ export default class ModelController {
       }
     })
 
-    const totalNumBatches =
+    this.totalNumBatches =
       Math.ceil(this.trainData.xs.shape[0] * (1 - validationSplit) / batchSize) *
       trainEpochs;
-    this.progressSlider.max = totalNumBatches;
   }
 
   getBatches(isData) {
     if (isData)
-      return this.trainData.xs.slice((this.progressSlider.value) * batchSize)
-    return this.trainData.labels.slice((this.progressSlider.value) * batchSize);
+      return this.trainData.xs.slice(this.progress * batchSize)
+    return this.trainData.labels.slice(this.progress * batchSize);
   }
   
   async startTraining() {
@@ -106,9 +104,9 @@ export default class ModelController {
       epochs: trainEpochs,
       callbacks: {
         onBatchEnd: function (batch, logs) {
-          console.log(batch);
-          console.log('batch', that.progressSlider.value, 'done');
-          that.progressSlider.stepUp();
+          console.log('batch', batch, 'done');
+          that.progress++;
+          that.progressBar.progress = that.progress / that.totalNumBatches;
           that.visualizer.update(that.model);
         },
         onEpochEnd: function (epoch, logs) {

@@ -26,7 +26,7 @@
       <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
       </div></div>
   </div>
-  <div id="cnn-visualizer" class="mdc-top-app-bar--fixed-adjust" style="display: none">
+  <div id="cnn-visualizer" class="main mdc-top-app-bar--fixed-adjust" style="display: none">
     <div class="controller-container">
       <div class="mdc-select">
         <div class="mdc-select__anchor demo-width-class">
@@ -80,20 +80,16 @@
             <div class="mdc-button__touch"></div>
           </button>
         </div>
-        <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
-          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-          aria-label="Select Value" aria-disabled="true">
-          <div class="mdc-slider__track-container">
-            <div class="mdc-slider__track"></div>
+        <div role="progressbar" class="mdc-linear-progress" aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
+          <div class="mdc-linear-progress__buffer">
+            <div class="mdc-linear-progress__buffer-bar"></div>
+            <div class="mdc-linear-progress__buffer-dots"></div>
           </div>
-          <div class="mdc-slider__thumb-container">
-            <div class="mdc-slider__pin">
-              <span class="mdc-slider__pin-value-marker"></span>
-            </div>
-            <svg class="mdc-slider__thumb" width="21" height="21">
-              <circle cx="10.5" cy="10.5" r="7.875"></circle>
-            </svg>
-            <div class="mdc-slider__focus-ring"></div>
+          <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+            <span class="mdc-linear-progress__bar-inner"></span>
+          </div>
+          <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+            <span class="mdc-linear-progress__bar-inner"></span>
           </div>
         </div>
       </div>
