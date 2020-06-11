@@ -10,9 +10,14 @@ body {
   margin: 0;
 }
 
-main {
-  flex: 1;
+.content {
+  display: none;
+}
+
+.content--active {
+  display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .loading {
@@ -27,20 +32,20 @@ main {
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 10px;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .play-progress-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .d3-container {
   outline: gray solid 1px;
   margin: 10px;
-  flex: 10;
+  position: relative;
 }
 
 @keyframes ldio-a1j3icknood {
