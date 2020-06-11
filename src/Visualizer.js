@@ -267,6 +267,13 @@ export default class Visualizer {
   initVisualization() {
     const width = this.width;
     const height = this.height;
+    const div = d3.select("#d3-container");
+    console.log(div.style("width"));
+    console.log(div.style("height"));
+    const divWidth = Number.parseInt(div.style("width"));
+    const divHeight = Number.parseInt(div.style("height"));
+    console.log(divWidth);
+    console.log(divHeight);
 
     const zoom = d3.zoom()
       .scaleExtent([1, 40])

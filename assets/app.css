@@ -4,8 +4,15 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
   margin: 0;
+}
+
+main {
+  flex: 1;
+  flex-direction: column;
 }
 
 .loading {
@@ -20,16 +27,20 @@ body {
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 10px;
+  flex: 1;
 }
 
 .play-progress-container {
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex: 1;
 }
 
 .d3-container {
+  outline: gray solid 1px;
   margin: 10px;
+  flex: 10;
 }
 
 @keyframes ldio-a1j3icknood {
