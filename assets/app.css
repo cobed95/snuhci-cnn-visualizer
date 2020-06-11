@@ -8,6 +8,15 @@ body {
   margin: 0;
 }
 
+.content {
+  display: none;
+}
+
+.content--active {
+  display: flex;
+  flex-direction: column;
+}
+
 .loading {
   margin: auto;
   text-align: center;
