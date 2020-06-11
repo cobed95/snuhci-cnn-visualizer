@@ -33,7 +33,7 @@
           <div class="mdc-tab-scroller__scroll-content">
             <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
               <span class="mdc-tab__content">
-                <span class="mdc-tab__text-label">One</span>
+                <span class="mdc-tab__text-label">Train a Real CNN on MNIST Data</span>
               </span>
               <span class="mdc-tab-indicator mdc-tab-indicator--active">
                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
@@ -42,7 +42,7 @@
             </button>
             <button class="mdc-tab mdc-tab" role="tab" aria-selected="true" tabindex="0">
               <span class="mdc-tab__content">
-                <span class="mdc-tab__text-label">Two</span>
+                <span class="mdc-tab__text-label">Learn about Backpropagation in CNN</span>
               </span>
               <span class="mdc-tab-indicator mdc-tab-indicator">
                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
@@ -101,9 +101,16 @@
         </div> 
         <div class="play-progress-container">
           <div class="mdc-touch-target-wrapper">
-            <button class="mdc-button mdc-button--touch">
+            <button id="play-button" class="mdc-button mdc-button--touch">
               <div class="mdc-button__ripple"></div>
               <span class="mdc-button__label">Play</span>
+              <div class="mdc-button__touch"></div>
+            </button>
+          </div>
+          <div class="mdc-touch-target-wrapper">
+            <button id="reset-button" class="mdc-button mdc-button--touch">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Reset</span>
               <div class="mdc-button__touch"></div>
             </button>
           </div>

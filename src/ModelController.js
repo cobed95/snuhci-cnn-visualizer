@@ -28,8 +28,20 @@ export default class ModelController {
     const select = document.querySelector(".mdc-select");
     this.activationExampleSelect = new MDCSelect(select);
 
-    this.playButton = document.querySelector(".mdc-button");
+    const buttons = document.querySelectorAll(".mdc-button");
+
+    let playButton, resetButton;
+    buttons.forEach(button => {
+      if (button.id === 'play-button')
+        playButton = button;
+      else if (button.id === 'reset-button')
+        resetButton = button;
+    });
+
+    this.playButton = playButton;
     this.play = false;
+
+    this.resetButton = resetButton;
 
     const linearProgress = document.querySelector(".mdc-linear-progress");
     this.progressBar = new MDCLinearProgress(linearProgress);
@@ -79,6 +91,24 @@ export default class ModelController {
       }
     })
 
+    this.resetButton.addEventListener("click", () => {
+      that.stopTraining();
+      tf.loadLayersModel("indexeddb://init-model")
+        .then(model => {
+          model.compile({
+            optimizer,
+            loss: 'categoricalCrossentropy',
+            metrics: ['accuracy']
+          });
+          that.model = model;
+          that.visualizer.update(that.model);
+          that.progress = 0;
+          that.progressBar.progress = 0;
+          that.play = false;
+          that.playButton.textContent = "play";
+        });
+    })
+
     this.totalNumBatches =
       Math.ceil(this.trainData.xs.shape[0] * (1 - validationSplit) / batchSize) *
       trainEpochs;
@@ -104,10 +134,13 @@ export default class ModelController {
       epochs: trainEpochs,
       callbacks: {
         onBatchEnd: function (batch, logs) {
+          if (!that.model.stopTraining) {
+            that.progress++;
+            that.progressBar.progress = that.progress / that.totalNumBatches;
+            that.visualizer.update(that.model);
+          }
+
           console.log('batch', batch, 'done');
-          that.progress++;
-          that.progressBar.progress = that.progress / that.totalNumBatches;
-          that.visualizer.update(that.model);
         },
         onEpochEnd: function (epoch, logs) {
           that.valAcc = logs.val_acc
