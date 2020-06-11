@@ -8,7 +8,12 @@ const hideLoading = () => {
 }
 
 const showCnnVis = () => {
-  document.getElementById("cnn-visualizer").style.display = "block";
+  const cnnVisualizer = document.getElementById("cnn-visualizer");
+  cnnVisualizer.style.display = "flex";
+  cnnVisualizer.style.flexDirection = "column";
+  cnnVisualizer.style.flex = 10;
+  // document.getElementById("cnn-visualizer").style.display = "flex";
+  // document.getElementById("cnn-visulizer")
 }
 
 function init() {

@@ -3,12 +3,14 @@ import { getRawData } from './nnbootstrap'
 import { runImage, getActivation } from './activation'
 
 const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
-const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range(['red', 'green']);
+// const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range([0, 50]);
+
+const BASE_SIZE = 110;
 
 export default class Visualizer {
   constructor(model, data) {
-    this.width = 1300;
-    this.height = 500;
+    this.width = BASE_SIZE * 16;
+    this.height = BASE_SIZE * 11;
 
     this.model = model;
 
@@ -21,6 +23,7 @@ export default class Visualizer {
   }
 
   constructValues(model) {
+    const svgWidth = this.width;
     const getImage = () => {
       const _image = this._activationExample.arraySync()[0];
       const image = new Array(28).fill(0).map(() => new Array(28));
@@ -114,8 +117,6 @@ export default class Visualizer {
       return prediction.arraySync()[0];
     };
 
-    const BASE_SIZE = 110.0;
-
     const constructRects = (image, conv1Weights, conv1Activations, conv2Weights, conv2Activations) => {
       const visLayers = [];
       const rects = [];
@@ -128,12 +129,19 @@ export default class Visualizer {
 
       let pivotY = 0.0;
 
+      const getPivotX = numG => {
+        const midPoint = svgWidth / 2;
+        const halfWidth = BASE_SIZE * (numG / 2);
+        return midPoint - halfWidth;
+      }
+
       for (let i = 0; i < visLayers.length; i++) {
         const visLayer = visLayers[i];
 
-        let pivotX = 0.0;
         let grids = visLayer[0];
         let cellSize = visLayer[1];
+
+        let pivotX = getPivotX(grids.length);
 
         let n = grids[0].length;
         let size = n * cellSize;
@@ -168,11 +176,11 @@ export default class Visualizer {
         pivotY += BASE_SIZE;
       }
       
-      return rects;
+      return { rects, pivotY };
     };
 
-    const constructCirclesAndLinks = (subsamplingOutputs, fcWeights, fcActivations) => {
-      let pivotY = 550.0;
+    const constructCirclesAndLinks = (subsamplingOutputs, fcWeights, fcActivations, pivotY) => {
+      // let pivotY = 550.0;
       let pivotX = 0.0;
 
       const margin = 20.0;
@@ -248,8 +256,8 @@ export default class Visualizer {
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const rects = constructRects(image, conv1Weights, conv1Activations, conv2Weights, conv2Activations);
-    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs, fcWeights, fcActivations);
+    const { rects, pivotY } = constructRects(image, conv1Weights, conv1Activations, conv2Weights, conv2Activations);
+    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs, fcWeights, fcActivations, pivotY);
 
     this.input = image;
     this.conv1 = conv1Weights;
@@ -275,8 +283,11 @@ export default class Visualizer {
     const svg = d3.select("#d3-container")
       .append("svg")
       .call(zoom)
-      .attr("width", width)
-      .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("position", "absolute")
+      // .attr("width", width)
+      // .attr("height", height)
+      // .attr("layout-css", "paddingLeft: 100")
       .on("click", reset);
 
     const g = svg.append("g").attr("id", "model-container");
@@ -318,7 +329,8 @@ export default class Visualizer {
       .attr("y1", d => d.y1)
       .attr("x2", d => d.x2)
       .attr("y2", d => d.y2)
-      .attr("stroke", "gray");
+      .attr("stroke", "gray")
+      .attr("stroke-width", d => d.weight);
 
     g.selectAll("circle")
       .data(this.circles)
@@ -334,8 +346,9 @@ export default class Visualizer {
   update(model) {
     this.model = model;
     this.constructValues(model);
-    d3.select("#model-container")
-      .selectAll("rect")
+    const modelContainer = d3.select("#model-container");
+
+    modelContainer.selectAll("rect")
       .data(this.rects)
       .attr("width", d => d.width)
       .attr("height", d=> d.height)
@@ -349,8 +362,16 @@ export default class Visualizer {
         return colorScale(d.weight)
       });
 
-    d3.select("#model-container")
-      .selectAll("circle")
+    modelContainer.selectAll("line")
+      .data(this.links)
+      .attr("x1", d => d.x1)
+      .attr("y1", d => d.y1)
+      .attr("x2", d => d.x2)
+      .attr("y2", d => d.y2)
+      .attr("stroke", "gray")
+      .attr("stroke-width", d => d.weight);
+
+    modelContainer.selectAll("circle")
       .data(this.circles)
       .attr("cx", d => d.cx)
       .attr("cy", d => d.cy)
