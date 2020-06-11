@@ -1,3 +1,4 @@
+import initTabs from './initTabs';
 import { bootstrap, getRawData } from './nnbootstrap';
 import Visualizer from './Visualizer';
 import ModelController from './ModelController';
@@ -16,6 +17,7 @@ function init() {
   bootstrap()
     .then(model => {
       console.log('Bootstrapping finished.');
+      initTabs();
       const data = getRawData();
       const visualizer = new Visualizer(model, data);
       const modelController = new ModelController(model, data, visualizer);

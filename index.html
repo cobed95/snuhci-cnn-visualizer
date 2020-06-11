@@ -27,74 +27,105 @@
       </div></div>
   </div>
   <div id="cnn-visualizer" class="main mdc-top-app-bar--fixed-adjust" style="display: none">
-    <div class="controller-container">
-      <div class="mdc-select">
-        <div class="mdc-select__anchor demo-width-class">
-          <span class="mdc-select__ripple"></span>
-          <input type="text" disabled readonly class="mdc-select__selected-text">
-          <i class="mdc-select__dropdown-icon"></i>
-          <span class="mdc-floating-label">Pick an example</span>
-          <span class="mdc-line-ripple"></span>
-        </div>
-      
-        <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
-          <ul class="mdc-list">
-            <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="1">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="1">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="fruit">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="grains">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="grains">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="grains">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="grains">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="grains">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-            <li class="mdc-list-item" data-value="grains">
-              <span class="mdc-list-item__graphic"></span>
-            </li>
-          </ul>
-        </div>
-      </div> 
-      <div class="play-progress-container">
-        <div class="mdc-touch-target-wrapper">
-          <button class="mdc-button mdc-button--touch">
-            <div class="mdc-button__ripple"></div>
-            <span class="mdc-button__label">Play</span>
-            <div class="mdc-button__touch"></div>
-          </button>
-        </div>
-        <div role="progressbar" class="mdc-linear-progress" aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
-          <div class="mdc-linear-progress__buffer">
-            <div class="mdc-linear-progress__buffer-bar"></div>
-            <div class="mdc-linear-progress__buffer-dots"></div>
-          </div>
-          <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
-            <span class="mdc-linear-progress__bar-inner"></span>
-          </div>
-          <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-            <span class="mdc-linear-progress__bar-inner"></span>
+    <div class="mdc-tab-bar" role="tablist">
+      <div class="mdc-tab-scroller">
+        <div class="mdc-tab-scroller__scroll-area">
+          <div class="mdc-tab-scroller__scroll-content">
+            <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
+              <span class="mdc-tab__content">
+                <span class="mdc-tab__text-label">One</span>
+              </span>
+              <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+              </span>
+              <span class="mdc-tab__ripple"></span>
+            </button>
+            <button class="mdc-tab mdc-tab" role="tab" aria-selected="true" tabindex="0">
+              <span class="mdc-tab__content">
+                <span class="mdc-tab__text-label">Two</span>
+              </span>
+              <span class="mdc-tab-indicator mdc-tab-indicator">
+                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+              </span>
+              <span class="mdc-tab__ripple"></span>
+            </button>
           </div>
         </div>
       </div>
     </div>
-    <div id="d3-container" class="d3-container"></div>
+    <div class="content content--active">
+      <div class="controller-container">
+        <div class="mdc-select">
+          <div class="mdc-select__anchor demo-width-class">
+            <span class="mdc-select__ripple"></span>
+            <input type="text" disabled readonly class="mdc-select__selected-text">
+            <i class="mdc-select__dropdown-icon"></i>
+            <span class="mdc-floating-label">Pick an example</span>
+            <span class="mdc-line-ripple"></span>
+          </div>
+        
+          <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
+            <ul class="mdc-list">
+              <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="1">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="1">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="fruit">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="grains">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="grains">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="grains">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="grains">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="grains">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+              <li class="mdc-list-item" data-value="grains">
+                <span class="mdc-list-item__graphic"></span>
+              </li>
+            </ul>
+          </div>
+        </div> 
+        <div class="play-progress-container">
+          <div class="mdc-touch-target-wrapper">
+            <button class="mdc-button mdc-button--touch">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Play</span>
+              <div class="mdc-button__touch"></div>
+            </button>
+          </div>
+          <div role="progressbar" class="mdc-linear-progress" aria-label="Example Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
+            <div class="mdc-linear-progress__buffer">
+              <div class="mdc-linear-progress__buffer-bar"></div>
+              <div class="mdc-linear-progress__buffer-dots"></div>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="d3-container" class="d3-container"></div>
+    </div>
+    <div class="content">
+      <p>Do whatever the fuck you want~</p>
+    </div>
   </div>
 </body>
 <script src="src/index.js"></script>
