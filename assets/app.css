@@ -35,11 +35,15 @@ body {
   /* flex: 1; */
 }
 
-.play-progress-container {
+.controller-container-row {
   display: flex;
   flex-direction: row;
   align-items: center;
   /* flex: 1; */
+}
+
+.tight-on-right {
+  margin-right: 10px;
 }
 
 .d3-container {
