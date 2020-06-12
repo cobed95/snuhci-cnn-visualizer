@@ -10,7 +10,7 @@ const BASE_SIZE = 110;
 export default class Visualizer {
   constructor(model, data) {
     this.width = BASE_SIZE * 16;
-    this.height = BASE_SIZE * 11;
+    this.height = BASE_SIZE * 12;
 
     this.model = model;
 
@@ -100,8 +100,24 @@ export default class Visualizer {
 
       return conv2Activations;
     };
+    
+    const constructSubsamplingOutputs1 = () => {
+      const result = getActivation(this._activationExample, model, model.layers[1]);
+      const synced = result.arraySync()[0];
+      
+      const subsamplingOutputs1 = new Array(8).fill(0).map(() => new Array(13).fill(13).map(() => new Array(13)));
+      for (let fidx = 0; fidx < 8; fidx++) {
+        for (let x = 0; x < 13; x++) {
+          for (let y = 0; y < 13; y++) {
+            subsamplingOutputs1[fidx][x][y] = synced[y][x][fidx];
+          }
+        }
+      }
 
-    const constructSubsamplingOutputs = () => {
+      return subsamplingOutputs1;
+    }
+
+    const constructSubsamplingOutputs2 = () => {
       const outputs = getActivation(this._activationExample, model, model.layers[3]);
       return outputs.arraySync()[0];
     };
@@ -117,13 +133,14 @@ export default class Visualizer {
       return prediction.arraySync()[0];
     };
 
-    const constructRects = (image, conv1Weights, conv1Activations, conv2Weights, conv2Activations) => {
+    const constructRects = (image, conv1Weights, conv1Activations, subsamplingOutputs1, conv2Weights, conv2Activations) => {
       const visLayers = [];
       const rects = [];
 
       visLayers.push([[image], 3]);
       visLayers.push([conv1Weights, 20]);
       visLayers.push([conv1Activations, 3]);
+      visLayers.push([subsamplingOutputs1, 3]);
       visLayers.push([conv2Weights, 20]);
       visLayers.push([conv2Activations, 3]);
 
@@ -250,14 +267,15 @@ export default class Visualizer {
     const image = getImage();
     const conv1Weights = getConv1Weights();
     const conv1Activations = getConv1Activations();
+    const subsamplingOutputs1 = constructSubsamplingOutputs1();
     const conv2Weights = getConv2Weights();
     const conv2Activations = getConv2Activations();
-    const subsamplingOutputs = constructSubsamplingOutputs();
+    const subsamplingOutputs2 = constructSubsamplingOutputs2();
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const { rects, pivotY } = constructRects(image, conv1Weights, conv1Activations, conv2Weights, conv2Activations);
-    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs, fcWeights, fcActivations, pivotY);
+    const { rects, pivotY } = constructRects(image, conv1Weights, conv1Activations, subsamplingOutputs1, conv2Weights, conv2Activations);
+    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
 
     this.input = image;
     this.conv1 = conv1Weights;
