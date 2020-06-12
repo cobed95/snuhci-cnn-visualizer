@@ -30,6 +30,8 @@
   "dependencies": {
     "@tensorflow/tfjs": "^2.0.0",
     "d3": "^5.16.0",
-    "material-components-web": "^6.0.0"
+    "material-components-web": "^6.0.0",
+    "mathjax": "^3.0.5",
+    "mathjax-full": "^3.0.5"
   }
 }
