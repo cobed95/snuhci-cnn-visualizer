@@ -10,7 +10,7 @@ const BASE_SIZE = 110;
 export default class Visualizer {
   constructor(model, data) {
     this.width = BASE_SIZE * 16;
-    this.height = BASE_SIZE * 12;
+    this.height = BASE_SIZE * 13;
 
     this.model = model;
 
@@ -140,7 +140,7 @@ export default class Visualizer {
       return prediction.arraySync()[0];
     };
 
-    const constructRects = (
+    const constructRectsAndLinks = (
       image, 
       conv1Weights, 
       conv1Bias, 
@@ -151,6 +151,17 @@ export default class Visualizer {
     ) => {
       const visLayers = [];
       const rects = [];
+
+      const imageRects = [];
+      const conv1Rects = [];
+      const conv1ActivationRects = [];
+
+      const subsampling1Rects = [];
+      const conv2Rects = [];
+      const conv2ActivationRects = [];
+
+      const links = [];
+      const arrows = [];
 
       visLayers.push([[image], 3]);
       visLayers.push([conv1Weights, 20]);
@@ -186,6 +197,8 @@ export default class Visualizer {
             const grid = grids[g];
             const totalDim = grid.length;
 
+            const gridRects = [];
+
             for (let dim = totalDim - 1; dim >= 0; dim--) {
               const singleDim = grid[dim];
               
@@ -209,7 +222,19 @@ export default class Visualizer {
                   rects.push(rect);
                 }
               }
+
+              let gridRect = {
+                x: x0,
+                y: y0,
+                width: cellSize * singleDim.length,
+                height: cellSize * singleDim[0].length
+              };
+
+              gridRects.push(gridRect);
             }
+
+            conv2Rects.push(gridRects);
+
             pivotX += BASE_SIZE;
           }
 
@@ -241,17 +266,99 @@ export default class Visualizer {
                 rects.push(rect);
               }
             }
+
+            let gridRect = {
+              x: x0,
+              y: y0,
+              width: cellSize * grid.length,
+              height: cellSize * grid[0].length
+            };
+
+            if (i === 0) imageRects.push(gridRect);
+            else if (i === 1) conv1Rects.push(gridRect);
+            else if (i === 2) conv1ActivationRects.push(gridRect);
+            else if (i === 3) subsampling1Rects.push(gridRect);
+            else if (i === 5) conv2ActivationRects.push(gridRect);
+
             pivotX += BASE_SIZE;
           }
         }
 
-        pivotY += BASE_SIZE;
+        if (i == 3) pivotY += 2 * BASE_SIZE;
+        else pivotY += BASE_SIZE;
+      }
+
+      for (let i = 0; i < conv1Rects.length; i++) {
+        const link = {
+          x1: imageRects[0].x + imageRects[0].width / 2,
+          y1: imageRects[0].y + imageRects[0].height,
+          x2: conv1Rects[i].x + conv1Rects[i].width / 2,
+          y2: conv1Rects[i].y,
+          weight: 1.0
+        };
+
+        links.push(link);
+      }
+
+      arrows.push({x1: 0, y1: 0, x2: 0, y2: 0, weight: 0});
+
+      for (let i = 0; i < conv1Rects.length; i++) {
+        const link = {
+          x1: conv1ActivationRects[i].x + conv1ActivationRects[i].width / 2,
+          y1: conv1ActivationRects[i].y + conv1ActivationRects[i].height,
+          x2: subsampling1Rects[i].x + subsampling1Rects[i].width / 2,
+          y2: subsampling1Rects[i].y,
+          weight: 1.0
+        };
+
+        arrows.push(link);
+      }
+
+      for (let i = 0; i < conv1Rects.length; i++) {
+        const link = {
+          x1: conv1Rects[i].x + conv1Rects[i].width / 2,
+          y1: conv1Rects[i].y + conv1Rects[i].height,
+          x2: conv1ActivationRects[i].x + conv1ActivationRects[i].width / 2,
+          y2: conv1ActivationRects[i].y,
+          weight: 1.0
+        };
+
+        links.push(link);
+      }
+
+      for (let r1 = 0; r1 < subsampling1Rects.length; r1++) {
+        for (let r2 = 0; r2 < conv2Rects.length; r2++) {
+          const link = {
+            x1: subsampling1Rects[r1].x + subsampling1Rects[r1].width / 2,
+            y1: subsampling1Rects[r1].y + subsampling1Rects[r1].height,
+            x2: conv2Rects[r2][7 - r1].x + conv2Rects[r2][7 - r1].width / 2,
+            y2: conv2Rects[r2][7 - r1].y,
+            weight: 1.0 
+          };
+
+          links.push(link);
+        }
+      }
+
+      for (let i = 0; i < conv2ActivationRects.length; i++) {
+        let rect = conv2ActivationRects[i];
+        let conv = conv2Rects[i][7];
+
+        const link = {
+          x1: conv.x + conv.width * 0.7,
+          y1: conv.y + conv.height,
+          x2: rect.x + rect.width / 2,
+          y2: rect.y,
+          weight: 1.0
+        };
+
+        links.push(link);
       }
       
-      return { rects, pivotY };
+      return { rects, conv2ActivationRects, links1: links, arrows, pivotY };
     };
 
-    const constructCirclesAndLinks = (subsamplingOutputs, fcWeights, fcActivations, pivotY) => {
+    const constructCirclesAndLinks = (subsamplingOutputs2, fcWeights, fcActivations, pivotY) => {
       // let pivotY = 550.0;
       let pivotX = 0.0;
 
@@ -262,13 +369,15 @@ export default class Visualizer {
       const output = [];
       const links = [];
 
+      const subsampling2Circles = [];
+
       for (let fidx = 0; fidx < 16; fidx++) {
         for (let x = 0; x < 5; x++) {
           for (let y = 0; y < 5; y++) {
             const xc = pivotX + margin + x * 18;
             const yc = pivotY + margin + y * 18;
             
-            const weight = subsamplingOutputs[y][x][fidx];
+            const weight = subsamplingOutputs2[y][x][fidx];
 
             const circle = {
               cx: xc, 
@@ -279,6 +388,7 @@ export default class Visualizer {
             
             circles.push(circle);
             flattened.push(circle);
+            if (x === 2 && y === 0) subsampling2Circles.push(circle);
           }
         }
 
@@ -316,7 +426,7 @@ export default class Visualizer {
         }
       }
 
-      return { circles, links };
+      return { circles, links2: links, subsampling2Circles };
     };
 
     const image = getImage();
@@ -329,7 +439,7 @@ export default class Visualizer {
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const { rects, pivotY } = constructRects(
+    const { rects, conv2ActivationRects, links1, arrows, pivotY } = constructRectsAndLinks(
       image, 
       conv1Weights, 
       conv1Bias,
@@ -338,7 +448,21 @@ export default class Visualizer {
       conv2Weights, 
       conv2Activations
     );
-    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
+    const { circles, links2, subsampling2Circles } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
+
+    const links = links1.concat(links2);
+
+    for (let i = 0; i < 16; i++) {
+      const link = {
+        x1: conv2ActivationRects[i].x + conv2ActivationRects[i].width / 2,
+        y1: conv2ActivationRects[i].y + conv2ActivationRects[i].height,
+        x2: subsampling2Circles[i].cx,
+        y2: subsampling2Circles[i].cy - subsampling2Circles[i].r,
+        weight: 1.0
+      };
+
+      arrows.push(link);
+    }
 
     this.input = image;
     this.conv1 = conv1Weights;
@@ -351,6 +475,7 @@ export default class Visualizer {
     this.rects = rects;
     this.circles = circles;
     this.links = links;
+    this.arrows = arrows;
   } 
 
   initVisualization() {
@@ -386,6 +511,26 @@ export default class Visualizer {
       );
     }  
 
+    const markerBoxWidth = 10;
+    const markerBoxHeight = 10;
+    const refX = markerBoxWidth / 2;
+    const refY = markerBoxHeight / 2;
+    const arrowPoints = [[0, 0], [0, 10], [10, 5]];
+
+    g.append('defs')
+      .append('marker')
+      .attr('id', 'arrow')
+      .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
+      .attr('refX', refX)
+      .attr('refY', refY)
+      .attr('markerWidth', markerBoxWidth)
+      .attr('markerHeight', markerBoxHeight)
+      .attr('orient', 'auto-start-reverse')
+      .append('path')
+      .attr('d', d3.line()(arrowPoints))
+      .attr('fill', 'gray')
+      .attr('stroke', 'gray');
+
     g.selectAll("rect")
       .data(this.rects)
       .enter()
@@ -412,6 +557,17 @@ export default class Visualizer {
       .attr("y2", d => d.y2)
       .attr("stroke", "gray")
       .attr("stroke-width", d => d.weight);
+
+    g.selectAll("path")
+      .data(this.arrows)
+      .enter()
+      .append("path")
+      .attr('d', d => d3.line()([[d.x1, d.y1], [d.x2, d.y2]]))
+      .attr('id', 'x-arrow')
+      .attr('opacity', 1)
+      .attr('stroke', 'gray')
+      .attr('marker-end', 'url(#arrow)')
+      .attr('fill', 'none');
 
     g.selectAll("circle")
       .data(this.circles)
