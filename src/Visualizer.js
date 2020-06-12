@@ -9,7 +9,7 @@ const BASE_SIZE = 110;
 
 export default class Visualizer {
   constructor(model, data) {
-    this.width = BASE_SIZE * 16;
+    this.width = BASE_SIZE * 17;
     this.height = BASE_SIZE * 13;
 
     this.model = model;
@@ -162,6 +162,7 @@ export default class Visualizer {
 
       const links = [];
       const arrows = [];
+      const texts = [];
 
       visLayers.push([[image], 3]);
       visLayers.push([conv1Weights, 20]);
@@ -186,12 +187,25 @@ export default class Visualizer {
         let grids = visLayer[0];
         let cellSize = visLayer[1];
 
-        let pivotX = getPivotX(grids.length);
+        let pivotX = getPivotX(grids.length + 1);
+
+        if (i === 0) 
+          texts.push({ label: "Input Image", x: pivotX - BASE_SIZE + 20.0, y: pivotY + 45.0 });
+        else if (i === 1)
+          texts.push({ label: "Conv1 Filters", x: pivotX - BASE_SIZE + 20.0, y: pivotY + 45.0 });
+        else if (i === 2)
+          texts.push({ label: "Conv1 Activations", x: pivotX - BASE_SIZE, y: pivotY + 45.0 });
+        else if (i === 3)
+          texts.push({ label: "Subsampling1", x: pivotX - BASE_SIZE + 20.0, y: pivotY + 45.0 });
+        else if (i === 5)
+          texts.push({ label: "Conv2 Activations", x: pivotX - BASE_SIZE + 20.0, y: pivotY + 45.0 });
 
         if (mustOverlap(i)) {
           let n = grids[0][0].length;
           let size = n * cellSize;
           let marginDiff = (BASE_SIZE - size) / 2.0;
+
+          texts.push({ label: "Conv2 Filters", x: pivotX - BASE_SIZE + 20.0, y: pivotY + 45.0 });
 
           for (let g = 0; g < grids.length; g++) {
             const grid = grids[g];
@@ -355,7 +369,7 @@ export default class Visualizer {
         links.push(link);
       }
       
-      return { rects, conv2ActivationRects, links1: links, arrows, pivotY };
+      return { rects, conv2ActivationRects, links1: links, arrows, texts1: texts, pivotY };
     };
 
     const constructCirclesAndLinks = (subsamplingOutputs2, fcWeights, fcActivations, pivotY) => {
@@ -370,6 +384,10 @@ export default class Visualizer {
       const links = [];
 
       const subsampling2Circles = [];
+
+      const texts = [];
+
+      texts.push({ label: "Subsampling2", x: pivotX - BASE_SIZE + 20.0, y: pivotY + 45.0 });
 
       for (let fidx = 0; fidx < 16; fidx++) {
         for (let x = 0; x < 5; x++) {
@@ -397,6 +415,8 @@ export default class Visualizer {
       
       pivotX = 88.0;
       pivotY += 5 * BASE_SIZE;
+
+      texts.push({ label: "Outputs", x: pivotX - BASE_SIZE, y: pivotY + 45.0 });
 
       for (let i = 0; i < 10; i++) {
         const circle = {
@@ -426,7 +446,7 @@ export default class Visualizer {
         }
       }
 
-      return { circles, links2: links, subsampling2Circles };
+      return { circles, links2: links, texts2: texts, subsampling2Circles };
     };
 
     const image = getImage();
@@ -439,7 +459,7 @@ export default class Visualizer {
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const { rects, conv2ActivationRects, links1, arrows, pivotY } = constructRectsAndLinks(
+    const { rects, conv2ActivationRects, links1, arrows, texts1, pivotY } = constructRectsAndLinks(
       image, 
       conv1Weights, 
       conv1Bias,
@@ -448,7 +468,7 @@ export default class Visualizer {
       conv2Weights, 
       conv2Activations
     );
-    const { circles, links2, subsampling2Circles } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
+    const { circles, links2, texts2, subsampling2Circles } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
 
     const links = links1.concat(links2);
 
@@ -476,20 +496,16 @@ export default class Visualizer {
     this.circles = circles;
     this.links = links;
     this.arrows = arrows;
+    this.texts = texts1.concat(texts2);
   } 
 
   initVisualization() {
     const width = this.width;
     const height = this.height;
 
-    const zoom = d3.zoom()
-      .scaleExtent([1, 40])
-      .on("zoom", zoomed);
-
     const svg = d3.select("#d3-container")
       .append("svg")
-      .call(zoom)
-      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("viewBox", `${-BASE_SIZE} 0 ${width} ${height}`)
       .attr("position", "absolute")
       // .attr("width", width)
       // .attr("height", height)
@@ -578,6 +594,14 @@ export default class Visualizer {
       .attr("r", d => d.r)
       .attr("stroke", "gray")
       .attr("fill", d => colorScale(d.weight));
+
+    g.selectAll("text")
+      .data(this.texts)
+      .enter()
+      .append("text")
+      .attr("x", d => d.x)
+      .attr("y", d => d.y)
+      .text(d => d.label);
   }
 
   update(model) {
