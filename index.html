@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <html>
 <head>
-  <title>d3.js grid of squares</title>
+  <title>CNN Visualizer</title>
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="assets/app.css" type="text/css">
@@ -39,7 +39,7 @@
           <div class="mdc-tab-scroller__scroll-content">
             <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
               <span class="mdc-tab__content">
-                <span class="mdc-tab__text-label">One</span>
+                <span class="mdc-tab__text-label">Train a Real CNN on MNIST Data</span>
               </span>
               <span class="mdc-tab-indicator mdc-tab-indicator--active">
                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
@@ -48,7 +48,7 @@
             </button>
             <button class="mdc-tab mdc-tab" role="tab" aria-selected="true" tabindex="0">
               <span class="mdc-tab__content">
-                <span class="mdc-tab__text-label">Two</span>
+                <span class="mdc-tab__text-label">Learn about Backpropagation in CNN</span>
               </span>
               <span class="mdc-tab-indicator mdc-tab-indicator">
                 <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
@@ -61,55 +61,65 @@
     </div>
     <div class="content content--active">
       <div class="controller-container">
-        <div class="mdc-select">
-          <div class="mdc-select__anchor demo-width-class">
-            <span class="mdc-select__ripple"></span>
-            <input type="text" disabled readonly class="mdc-select__selected-text">
-            <i class="mdc-select__dropdown-icon"></i>
-            <span class="mdc-floating-label">Pick an example</span>
-            <span class="mdc-line-ripple"></span>
-          </div>
+        <div class="controller-container-row">
+          <div class="mdc-select tight-on-right">
+            <div class="mdc-select__anchor demo-width-class">
+              <span class="mdc-select__ripple"></span>
+              <input type="text" disabled readonly class="mdc-select__selected-text">
+              <i class="mdc-select__dropdown-icon"></i>
+              <span class="mdc-floating-label">Pick an example</span>
+              <span class="mdc-line-ripple"></span>
+            </div>
+          
+            <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
+              <ul class="mdc-list">
+                <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="1">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="1">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="fruit">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="grains">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="grains">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="grains">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="grains">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="grains">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+                <li class="mdc-list-item" data-value="grains">
+                  <span class="mdc-list-item__graphic"></span>
+                </li>
+              </ul>
+            </div>
+          </div> 
+        </div>
         
-          <div class="mdc-select__menu mdc-menu mdc-menu-surface demo-width-class">
-            <ul class="mdc-list">
-              <li class="mdc-list-item mdc-list-item--selected" data-value="0" aria-selected="true">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="1">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="1">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="fruit">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="grains">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="grains">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="grains">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="grains">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="grains">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-              <li class="mdc-list-item" data-value="grains">
-                <span class="mdc-list-item__graphic"></span>
-              </li>
-            </ul>
-          </div>
-        </div> 
-        <div class="play-progress-container">
+        <div class="controller-container-row">
           <div class="mdc-touch-target-wrapper">
-            <button class="mdc-button mdc-button--touch">
+            <button id="play-button" class="mdc-button mdc-button--touch">
               <div class="mdc-button__ripple"></div>
               <span class="mdc-button__label">Play</span>
+              <div class="mdc-button__touch"></div>
+            </button>
+          </div>
+          <div class="mdc-touch-target-wrapper tight-on-right">
+            <button id="reset-button" class="mdc-button mdc-button--touch">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Reset</span>
               <div class="mdc-button__touch"></div>
             </button>
           </div>

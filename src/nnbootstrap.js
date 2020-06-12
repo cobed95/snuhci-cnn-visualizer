@@ -270,6 +270,7 @@ export async function bootstrap() {
 
   console.log('Creating CNN...');
   const model = createConvModel();
+  await model.save("indexeddb://init-model");
 
   return model;
 }

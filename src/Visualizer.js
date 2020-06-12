@@ -3,12 +3,14 @@ import { getRawData } from './nnbootstrap'
 import { runImage, getActivation } from './activation'
 
 const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
-const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range(['red', 'green']);
+// const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range([0, 50]);
+
+const BASE_SIZE = 110;
 
 export default class Visualizer {
   constructor(model, data) {
-    this.width = 1300;
-    this.height = 500;
+    this.width = BASE_SIZE * 16;
+    this.height = BASE_SIZE * 12;
 
     this.model = model;
 
@@ -21,6 +23,7 @@ export default class Visualizer {
   }
 
   constructValues(model) {
+    const svgWidth = this.width;
     const getImage = () => {
       const _image = this._activationExample.arraySync()[0];
       const image = new Array(28).fill(0).map(() => new Array(28));
@@ -51,12 +54,17 @@ export default class Visualizer {
 
     const getConv2Weights = () => {
       const rawWeights = model.layers[2].getWeights()[0].arraySync();
-      const conv2Weights = new Array(16).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3)));
+      const conv2Weights = new Array(16).fill(0)
+        .map(() => new Array(8).fill(0)
+          .map(() => new Array(3).fill(0)
+            .map(() => new Array(3))));
 
       for (let fidx = 0; fidx < 16; fidx++) {
-        for (let x = 0; x < 3; x++) {
-          for (let y = 0; y < 3; y++) {
-            conv2Weights[fidx][x][y] = rawWeights[y][x][0][fidx];
+        for (let dim = 0; dim < 8; dim++) {
+          for (let x = 0; x < 3; x++) {
+            for (let y = 0; y < 3; y++) {
+              conv2Weights[fidx][dim][x][y] = rawWeights[y][x][dim][fidx];
+            }
           }
         }
       }
@@ -97,8 +105,24 @@ export default class Visualizer {
 
       return conv2Activations;
     };
+    
+    const constructSubsamplingOutputs1 = () => {
+      const result = getActivation(this._activationExample, model, model.layers[1]);
+      const synced = result.arraySync()[0];
+      
+      const subsamplingOutputs1 = new Array(8).fill(0).map(() => new Array(13).fill(13).map(() => new Array(13)));
+      for (let fidx = 0; fidx < 8; fidx++) {
+        for (let x = 0; x < 13; x++) {
+          for (let y = 0; y < 13; y++) {
+            subsamplingOutputs1[fidx][x][y] = synced[y][x][fidx];
+          }
+        }
+      }
 
-    const constructSubsamplingOutputs = () => {
+      return subsamplingOutputs1;
+    }
+
+    const constructSubsamplingOutputs2 = () => {
       const outputs = getActivation(this._activationExample, model, model.layers[3]);
       return outputs.arraySync()[0];
     };
@@ -114,65 +138,111 @@ export default class Visualizer {
       return prediction.arraySync()[0];
     };
 
-    const BASE_SIZE = 110.0;
-
-    const constructRects = (image, conv1Weights, conv1Activations, conv2Weights, conv2Activations) => {
+    const constructRects = (image, conv1Weights, conv1Activations, subsamplingOutputs1, conv2Weights, conv2Activations) => {
       const visLayers = [];
       const rects = [];
 
       visLayers.push([[image], 3]);
       visLayers.push([conv1Weights, 20]);
       visLayers.push([conv1Activations, 3]);
+      visLayers.push([subsamplingOutputs1, 3]);
       visLayers.push([conv2Weights, 20]);
       visLayers.push([conv2Activations, 3]);
 
       let pivotY = 0.0;
 
+      const getPivotX = numG => {
+        const midPoint = svgWidth / 2;
+        const halfWidth = BASE_SIZE * (numG / 2);
+        return midPoint - halfWidth;
+      }
+
+      const mustOverlap = i => i === 4;
+
       for (let i = 0; i < visLayers.length; i++) {
         const visLayer = visLayers[i];
 
-        let pivotX = 0.0;
         let grids = visLayer[0];
         let cellSize = visLayer[1];
 
-        let n = grids[0].length;
-        let size = n * cellSize;
+        let pivotX = getPivotX(grids.length);
 
-        let marginDiff = (BASE_SIZE - size) / 2.0;
+        if (mustOverlap(i)) {
+          let n = grids[0][0].length;
+          let size = n * cellSize;
+          let marginDiff = (BASE_SIZE - size) / 2.0;
 
-        for (let g = 0; g < grids.length; g++) {
-          const grid = grids[g];
+          for (let g = 0; g < grids.length; g++) {
+            const grid = grids[g];
+            const totalDim = grid.length;
 
-          let x0 = pivotX + marginDiff;
-          let y0 = pivotY + marginDiff;
+            for (let dim = totalDim - 1; dim >= 0; dim--) {
+              const singleDim = grid[dim];
+              
+              const dimOffset = 3 * (dim - (totalDim / 2));
+              let x0 = pivotX + marginDiff + dimOffset;
+              let y0 = pivotY + marginDiff - dimOffset;
 
-          for (let x = 0; x < grid.length; x++) {
-            for (let y = 0; y < grid[x].length; y++) {
-              const xc = x0 + x * cellSize;
-              const yc = y0 + y * cellSize;
+              for (let x = 0; x < singleDim.length; x++) {
+                for (let y = 0; y < singleDim[x].length; y++) {
+                  const xc = x0 + x * cellSize;
+                  const yc = y0 + y * cellSize;
 
-              let rect = {
-                x: xc,
-                y: yc,
-                width: cellSize,
-                height: cellSize,
-                weight: grid[x][y]
-              };
+                  let rect = {
+                    x: xc,
+                    y: yc,
+                    width: cellSize,
+                    height: cellSize,
+                    weight: singleDim[x][y]
+                  };
 
-              rects.push(rect);
+                  rects.push(rect);
+                }
+              }
             }
+            pivotX += BASE_SIZE;
           }
-          pivotX += BASE_SIZE;
-        } 
+
+        } else {
+          let n = grids[0].length;
+          let size = n * cellSize;
+
+          let marginDiff = (BASE_SIZE - size) / 2.0;
+
+          for (let g = 0; g < grids.length; g++) {
+            const grid = grids[g];
+
+            let x0 = pivotX + marginDiff;
+            let y0 = pivotY + marginDiff;
+
+            for (let x = 0; x < grid.length; x++) {
+              for (let y = 0; y < grid[x].length; y++) {
+                const xc = x0 + x * cellSize;
+                const yc = y0 + y * cellSize;
+
+                let rect = {
+                  x: xc,
+                  y: yc,
+                  width: cellSize,
+                  height: cellSize,
+                  weight: grid[x][y]
+                };
+
+                rects.push(rect);
+              }
+            }
+            pivotX += BASE_SIZE;
+          }
+        }
 
         pivotY += BASE_SIZE;
       }
       
-      return rects;
+      return { rects, pivotY };
     };
 
-    const constructCirclesAndLinks = (subsamplingOutputs, fcWeights, fcActivations) => {
-      let pivotY = 550.0;
+    const constructCirclesAndLinks = (subsamplingOutputs, fcWeights, fcActivations, pivotY) => {
+      // let pivotY = 550.0;
       let pivotX = 0.0;
 
       const margin = 20.0;
@@ -242,14 +312,15 @@ export default class Visualizer {
     const image = getImage();
     const conv1Weights = getConv1Weights();
     const conv1Activations = getConv1Activations();
+    const subsamplingOutputs1 = constructSubsamplingOutputs1();
     const conv2Weights = getConv2Weights();
     const conv2Activations = getConv2Activations();
-    const subsamplingOutputs = constructSubsamplingOutputs();
+    const subsamplingOutputs2 = constructSubsamplingOutputs2();
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const rects = constructRects(image, conv1Weights, conv1Activations, conv2Weights, conv2Activations);
-    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs, fcWeights, fcActivations);
+    const { rects, pivotY } = constructRects(image, conv1Weights, conv1Activations, subsamplingOutputs1, conv2Weights, conv2Activations);
+    const { circles, links } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
 
     this.input = image;
     this.conv1 = conv1Weights;
@@ -275,8 +346,11 @@ export default class Visualizer {
     const svg = d3.select("#d3-container")
       .append("svg")
       .call(zoom)
-      .attr("width", width)
-      .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("position", "absolute")
+      // .attr("width", width)
+      // .attr("height", height)
+      // .attr("layout-css", "paddingLeft: 100")
       .on("click", reset);
 
     const g = svg.append("g").attr("id", "model-container");
@@ -318,7 +392,8 @@ export default class Visualizer {
       .attr("y1", d => d.y1)
       .attr("x2", d => d.x2)
       .attr("y2", d => d.y2)
-      .attr("stroke", "gray");
+      .attr("stroke", "gray")
+      .attr("stroke-width", d => d.weight);
 
     g.selectAll("circle")
       .data(this.circles)
@@ -334,8 +409,9 @@ export default class Visualizer {
   update(model) {
     this.model = model;
     this.constructValues(model);
-    d3.select("#model-container")
-      .selectAll("rect")
+    const modelContainer = d3.select("#model-container");
+
+    modelContainer.selectAll("rect")
       .data(this.rects)
       .attr("width", d => d.width)
       .attr("height", d=> d.height)
@@ -349,8 +425,16 @@ export default class Visualizer {
         return colorScale(d.weight)
       });
 
-    d3.select("#model-container")
-      .selectAll("circle")
+    modelContainer.selectAll("line")
+      .data(this.links)
+      .attr("x1", d => d.x1)
+      .attr("y1", d => d.y1)
+      .attr("x2", d => d.x2)
+      .attr("y2", d => d.y2)
+      .attr("stroke", "gray")
+      .attr("stroke-width", d => d.weight);
+
+    modelContainer.selectAll("circle")
       .data(this.circles)
       .attr("cx", d => d.cx)
       .attr("cy", d => d.cy)

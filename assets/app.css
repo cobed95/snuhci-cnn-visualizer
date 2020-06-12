@@ -4,8 +4,14 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
   margin: 0;
+}
+
+p {
+  margin: 10px;
 }
 
 .content {
@@ -15,6 +21,7 @@ body {
 .content--active {
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .loading {
@@ -29,16 +36,36 @@ body {
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 10px;
+  /* flex: 1; */
 }
 
-.play-progress-container {
+.controller-container-row {
   display: flex;
   flex-direction: row;
   align-items: center;
+  /* flex: 1; */
+}
+
+.tight-on-right {
+  margin-right: 10px;
 }
 
 .d3-container {
+  outline: gray solid 1px;
   margin: 10px;
+  position: relative;
+}
+
+/* .bp-svg-row { */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* flex: 1; */
+  /* align-items: center; */
+/* } */
+
+.bp-svg-container {
+  text-align: center;
+  position: relative;
 }
 
 @keyframes ldio-a1j3icknood {
