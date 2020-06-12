@@ -54,12 +54,17 @@ export default class Visualizer {
 
     const getConv2Weights = () => {
       const rawWeights = model.layers[2].getWeights()[0].arraySync();
-      const conv2Weights = new Array(16).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3)));
+      const conv2Weights = new Array(16).fill(0)
+        .map(() => new Array(8).fill(0)
+          .map(() => new Array(3).fill(0)
+            .map(() => new Array(3))));
 
       for (let fidx = 0; fidx < 16; fidx++) {
-        for (let x = 0; x < 3; x++) {
-          for (let y = 0; y < 3; y++) {
-            conv2Weights[fidx][x][y] = rawWeights[y][x][0][fidx];
+        for (let dim = 0; dim < 8; dim++) {
+          for (let x = 0; x < 3; x++) {
+            for (let y = 0; y < 3; y++) {
+              conv2Weights[fidx][dim][x][y] = rawWeights[y][x][dim][fidx];
+            }
           }
         }
       }
@@ -152,6 +157,8 @@ export default class Visualizer {
         return midPoint - halfWidth;
       }
 
+      const mustOverlap = i => i === 4;
+
       for (let i = 0; i < visLayers.length; i++) {
         const visLayer = visLayers[i];
 
@@ -160,35 +167,73 @@ export default class Visualizer {
 
         let pivotX = getPivotX(grids.length);
 
-        let n = grids[0].length;
-        let size = n * cellSize;
+        if (mustOverlap(i)) {
+          let n = grids[0][0].length;
+          let size = n * cellSize;
+          let marginDiff = (BASE_SIZE - size) / 2.0;
 
-        let marginDiff = (BASE_SIZE - size) / 2.0;
+          for (let g = 0; g < grids.length; g++) {
+            const grid = grids[g];
+            const totalDim = grid.length;
 
-        for (let g = 0; g < grids.length; g++) {
-          const grid = grids[g];
+            for (let dim = totalDim - 1; dim >= 0; dim--) {
+              const singleDim = grid[dim];
+              
+              const dimOffset = 3 * (dim - (totalDim / 2));
+              let x0 = pivotX + marginDiff + dimOffset;
+              let y0 = pivotY + marginDiff - dimOffset;
 
-          let x0 = pivotX + marginDiff;
-          let y0 = pivotY + marginDiff;
+              for (let x = 0; x < singleDim.length; x++) {
+                for (let y = 0; y < singleDim[x].length; y++) {
+                  const xc = x0 + x * cellSize;
+                  const yc = y0 + y * cellSize;
 
-          for (let x = 0; x < grid.length; x++) {
-            for (let y = 0; y < grid[x].length; y++) {
-              const xc = x0 + x * cellSize;
-              const yc = y0 + y * cellSize;
+                  let rect = {
+                    x: xc,
+                    y: yc,
+                    width: cellSize,
+                    height: cellSize,
+                    weight: singleDim[x][y]
+                  };
 
-              let rect = {
-                x: xc,
-                y: yc,
-                width: cellSize,
-                height: cellSize,
-                weight: grid[x][y]
-              };
-
-              rects.push(rect);
+                  rects.push(rect);
+                }
+              }
             }
+            pivotX += BASE_SIZE;
           }
-          pivotX += BASE_SIZE;
-        } 
+
+        } else {
+          let n = grids[0].length;
+          let size = n * cellSize;
+
+          let marginDiff = (BASE_SIZE - size) / 2.0;
+
+          for (let g = 0; g < grids.length; g++) {
+            const grid = grids[g];
+
+            let x0 = pivotX + marginDiff;
+            let y0 = pivotY + marginDiff;
+
+            for (let x = 0; x < grid.length; x++) {
+              for (let y = 0; y < grid[x].length; y++) {
+                const xc = x0 + x * cellSize;
+                const yc = y0 + y * cellSize;
+
+                let rect = {
+                  x: xc,
+                  y: yc,
+                  width: cellSize,
+                  height: cellSize,
+                  weight: grid[x][y]
+                };
+
+                rects.push(rect);
+              }
+            }
+            pivotX += BASE_SIZE;
+          }
+        }
 
         pivotY += BASE_SIZE;
       }
