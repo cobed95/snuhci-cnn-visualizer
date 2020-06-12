@@ -275,40 +275,6 @@ const visualizeBackPropagation = () => {
   appendMathJax(bpContainer, "p", text4A);
   appendMathJax(bpContainer, "p", text4B);
 
-
-  // bpContainer.append("body")
-  //   .html(
-  //     function (d) {
-  //       setTimeout(function(){MathJax.Hub.Queue(["Typeset",MathJax.Hub]);}, 10);
-
-  //       return "4. Computing ${{\\partial{E}\\over{{\\partial{X}}}}}$"
-  //     }
-  //   );
-
-  // bpContainer
-  //   .append("body")
-  //   .html(
-  //     function (d) {
-  //       setTimeout(function(){MathJax.Hub.Queue(["Typeset",MathJax.Hub]);}, 10);
-
-  //       let string = "(a) ${{\\partial{E}\\over{{\\partial{X_{i, j}}}}}} = \\sum\\limits^{M}_{k}{ {\\partial{E}\\over{\\partial{O_k}}} \\cdot {\\partial{O_k}\\over{\\partial{X_{i, j}}}} }$,"
-  //       string += "$ $";
-
-  //       return string;
-  //     } 
-  //   );
-
-  // bpContainer
-  //   .append("body")
-  //   .html(
-  //     function (d) {
-  //       setTimeout(function(){MathJax.Hub.Queue(["Typeset",MathJax.Hub]);}, 10);
-
-  //       let string = "(b) $ {{\\partial{E}\\over{{\\partial{X}}}}} = FullConvolution(F, {{\\partial{E}\\over{{\\partial{O}}}}}) $";
-  //       return string;
-  //     } 
-  //   );
-
   const allIds = ['#x-arrow', '#f-arrow', '#o-arrow', '#x-text', '#f-text', '#o-text'];
   const leftIds = ['#x-arrow', '#f-arrow', '#x-text', '#f-text'];
   const rightIds = ['#o-arrow', '#o-text'];
