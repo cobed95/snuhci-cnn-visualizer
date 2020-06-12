@@ -38,18 +38,20 @@ export default class Visualizer {
     };
 
     const getConv1Weights = () => {
-      const rawWeights = model.layers[0].getWeights()[0].arraySync();
+      const rawWeights = model.layers[0].getWeights();
+      const [kernel, conv1Bias] = rawWeights.map(el => el.arraySync());
+      // const rawWeights = model.layers[0].getWeights()[0].arraySync();
       const conv1Weights = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3)));
 
       for (let fidx = 0; fidx < 8; fidx++) {
         for (let x = 0; x < 3; x++) {
           for (let y = 0; y < 3; y++) {
-            conv1Weights[fidx][x][y] = rawWeights[y][x][0][fidx];
+            conv1Weights[fidx][x][y] = kernel[y][x][0][fidx];
           }
         }
       } 
 
-      return conv1Weights;
+      return { conv1Weights, conv1Bias };
     };
 
     const getConv2Weights = () => {
@@ -138,7 +140,15 @@ export default class Visualizer {
       return prediction.arraySync()[0];
     };
 
-    const constructRects = (image, conv1Weights, conv1Activations, subsamplingOutputs1, conv2Weights, conv2Activations) => {
+    const constructRects = (
+      image, 
+      conv1Weights, 
+      conv1Bias, 
+      conv1Activations, 
+      subsamplingOutputs1, 
+      conv2Weights, 
+      conv2Activations
+    ) => {
       const visLayers = [];
       const rects = [];
 
@@ -310,7 +320,7 @@ export default class Visualizer {
     };
 
     const image = getImage();
-    const conv1Weights = getConv1Weights();
+    const { conv1Weights, conv1Bias } = getConv1Weights();
     const conv1Activations = getConv1Activations();
     const subsamplingOutputs1 = constructSubsamplingOutputs1();
     const conv2Weights = getConv2Weights();
@@ -319,7 +329,15 @@ export default class Visualizer {
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const { rects, pivotY } = constructRects(image, conv1Weights, conv1Activations, subsamplingOutputs1, conv2Weights, conv2Activations);
+    const { rects, pivotY } = constructRects(
+      image, 
+      conv1Weights, 
+      conv1Bias,
+      conv1Activations, 
+      subsamplingOutputs1, 
+      conv2Weights, 
+      conv2Activations
+    );
     const { circles, links } = constructCirclesAndLinks(subsamplingOutputs2, fcWeights, fcActivations, pivotY);
 
     this.input = image;
