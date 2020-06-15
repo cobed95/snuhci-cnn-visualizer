@@ -10,6 +10,10 @@ body {
   margin: 0;
 }
 
+p {
+  margin: 10px;
+}
+
 .content {
   display: none;
 }
@@ -49,6 +53,18 @@ body {
 .d3-container {
   outline: gray solid 1px;
   margin: 10px;
+  position: relative;
+}
+
+/* .bp-svg-row { */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* flex: 1; */
+  /* align-items: center; */
+/* } */
+
+.bp-svg-container {
+  text-align: center;
   position: relative;
 }
 

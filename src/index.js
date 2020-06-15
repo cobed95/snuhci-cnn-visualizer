@@ -1,11 +1,12 @@
 import initTabs from './initTabs';
+import visualizeBackPropagation from './visualizeBackPropagation';
 import { bootstrap, getRawData } from './nnbootstrap';
 import Visualizer from './Visualizer';
 import ModelController from './ModelController';
 
 const hideLoading = () => {
   document.getElementById("loading").style.display = "none";
-}
+};
 
 const showCnnVis = () => {
   const cnnVisualizer = document.getElementById("cnn-visualizer");
@@ -28,6 +29,7 @@ function init() {
       const modelController = new ModelController(model, data, visualizer);
       hideLoading();
       showCnnVis();
+      visualizeBackPropagation();
     });
 }
 

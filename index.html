@@ -2,11 +2,17 @@
 <meta charset="utf-8">
 <html>
 <head>
-  <title>d3.js grid of squares</title>
+  <title>CNN Visualizer</title>
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="assets/app.css" type="text/css">
 </head>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$", "$"], ["\\(", "\\)"]]}
+  });
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <body>
   <header class="mdc-top-app-bar">
     <div class="mdc-top-app-bar__row">
@@ -134,8 +140,10 @@
       <div id="d3-container" class="d3-container"></div>
     </div>
     <div class="content">
-      <p>Do whatever the fuck you want~</p>
+      <div id="bp-container" class="d3-container"></div>
     </div>
   </div>
 </body>
 <script src="src/index.js"></script>
+<!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
