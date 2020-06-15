@@ -534,19 +534,19 @@ export default class Visualizer {
     const refY = markerBoxHeight / 2;
     const arrowPoints = [[0, 0], [0, 10], [10, 5]];
 
-    g.append('defs')
-      .append('marker')
-      .attr('id', 'arrow')
-      .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
-      .attr('refX', refX)
-      .attr('refY', refY)
-      .attr('markerWidth', markerBoxWidth)
-      .attr('markerHeight', markerBoxHeight)
-      .attr('orient', 'auto-start-reverse')
-      .append('path')
-      .attr('d', d3.line()(arrowPoints))
-      .attr('fill', 'gray')
-      .attr('stroke', 'gray');
+    // g.append('defs')
+    //   .append('marker')
+    //   .attr('id', 'arrow')
+    //   .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
+    //   .attr('refX', refX)
+    //   .attr('refY', refY)
+    //   .attr('markerWidth', markerBoxWidth)
+    //   .attr('markerHeight', markerBoxHeight)
+    //   .attr('orient', 'auto-start-reverse')
+    //   .append('path')
+    //   .attr('d', d3.line()(arrowPoints))
+    //   .attr('fill', 'gray')
+    //   .attr('stroke', 'gray');
 
     g.selectAll("rect")
       .data(this.rects)
@@ -580,7 +580,6 @@ export default class Visualizer {
       .enter()
       .append("path")
       .attr('d', d => d3.line()([[d.x1, d.y1], [d.x2, d.y2]]))
-      .attr('id', 'x-arrow')
       .attr('opacity', 1)
       .attr('stroke', 'gray')
       .attr('marker-end', 'url(#arrow)')
