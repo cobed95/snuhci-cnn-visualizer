@@ -1,11 +1,12 @@
 import * as d3 from "d3";
-import { getRawData } from './nnbootstrap'
-import { runImage, getActivation } from './activation'
+import { runImage, getActivation } from './activation';
+import createPopupOnMouseover from './createPopupOnMouseover';
 
 const colorScale = d3.scaleLinear().domain([0.0, 1.0]).range(['white', 'black']);
 // const outputScale = d3.scaleLinear().domain([0.0, 1.0]).range([0, 50]);
 
 const BASE_SIZE = 110;
+const MODAL_SIZE = 110;
 
 export default class Visualizer {
   constructor(model, data) {
@@ -515,6 +516,12 @@ export default class Visualizer {
   initVisualization() {
     const width = this.width;
     const height = this.height;
+    
+    const showModal = () => {
+      const container = d3.select('#d3-container');
+      container.append('div')
+        .attr('class', 'modal')
+    }
 
     const svg = d3.select("#d3-container")
       .append("svg")
@@ -524,22 +531,12 @@ export default class Visualizer {
       // .attr("width", width)
       // .attr("height", height)
       // .attr("layout-css", "paddingLeft: 100")
-      .on("click", reset);
 
     const g = svg.append("g").attr("id", "model-container");
 
     function zoomed() {
       g.attr("transform", d3.event.transform);
     }
-
-    function reset() {
-      console.log("Reset");
-      svg.transition().duration(750).call(
-        zoom.transform,
-        d3.zoomIdentity,
-        d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
-      );
-    }  
 
     const markerBoxWidth = 10;
     const markerBoxHeight = 10;
@@ -561,7 +558,7 @@ export default class Visualizer {
     //   .attr('fill', 'gray')
     //   .attr('stroke', 'gray');
 
-    g.selectAll("rect")
+    const drawnRects = g.selectAll("rect")
       .data(this.rects)
       .enter()
       .append("rect")
@@ -576,6 +573,8 @@ export default class Visualizer {
 
         return colorScale(d.weight)
       });
+
+    createPopupOnMouseover(g, drawnRects, BASE_SIZE * 4, BASE_SIZE, -BASE_SIZE, 0);
 
     g.selectAll("line")
       .data(this.links)
