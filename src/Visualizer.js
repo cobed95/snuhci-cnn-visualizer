@@ -517,12 +517,6 @@ export default class Visualizer {
     const width = this.width;
     const height = this.height;
     
-    const showModal = () => {
-      const container = d3.select('#d3-container');
-      container.append('div')
-        .attr('class', 'modal')
-    }
-
     const svg = d3.select("#d3-container")
       .append("svg")
       .attr("viewBox", `${-BASE_SIZE} 0 ${width} ${height}`)
@@ -558,7 +552,7 @@ export default class Visualizer {
     //   .attr('fill', 'gray')
     //   .attr('stroke', 'gray');
 
-    const drawnRects = g.selectAll("rect")
+    g.selectAll("rect")
       .data(this.rects)
       .enter()
       .append("rect")
@@ -574,7 +568,18 @@ export default class Visualizer {
         return colorScale(d.weight)
       });
 
-    createPopupOnMouseover(g, drawnRects, BASE_SIZE * 4, BASE_SIZE, -BASE_SIZE, 0);
+    const conv1Rects = g.selectAll('#conv1Rect')
+      .data(this.conv1ActivationRects)
+      .enter()
+      .append('rect')
+      .attr('id', 'conv1Rect')
+      .attr('width', d => d.width)
+      .attr('height', d => d.height)
+      .attr('x', d => d.x)
+      .attr('y', d => d.y)
+      .attr('fill', 'red')
+
+    createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4, BASE_SIZE * 2, -BASE_SIZE, 0);
 
     g.selectAll("line")
       .data(this.links)

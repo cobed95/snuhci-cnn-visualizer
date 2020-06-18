@@ -42,24 +42,24 @@ const getPoints = (d, popupWidth, popupHeight, minX, minY) => {
   switch (popupDirection) {
     case 0:
       return [
-        standard,
-        [x, y - popupHeight],
         [x - popupWidth, y - popupHeight],
-        [x - popupWidth, y]
+        [x - popupWidth, y],
+        standard,
+        [x, y - popupHeight]
       ];
     case 1:
       return [
+        [x + cellSize, y - popupHeight],
         [x + cellSize, y],
         [x + cellSize + popupWidth, y],
-        [x + cellSize + popupWidth, y - popupHeight],
-        [x + cellSize, y - popupHeight]
+        [x + cellSize + popupWidth, y - popupHeight]
       ];
     case 2:
       return [
-        [x, y + cellSize],
         [x - popupWidth, y + cellSize],
         [x - popupWidth, y + cellSize + popupHeight],
-        [x, y + cellSize + popupHeight]
+        [x, y + cellSize + popupHeight],
+        [x, y + cellSize],
       ];
     case 3:
       return [
@@ -83,23 +83,37 @@ const giveId = selection => {
 };
 
 const getContainerConstructor = (container, popupWidth, popupHeight, minX, minY) => d => {
+  const containerPoints = getPoints(d, popupWidth, popupHeight, minX, minY);
+  const pivot = containerPoints[0];
   const popupContainer = container.selectAll('polygon')
     .data([0])
     .enter()
     .append('polygon')
-    .attr('points', pointsToStr(getPoints(d, popupWidth, popupHeight, minX, minY)))
+    .attr('points', pointsToStr(containerPoints))
     .attr('fill', 'white')
     .attr('stroke', 'gray');
-  return popupContainer;
+  return { popupContainer, pivot };
+};
+
+const getTextConstructor = (container, pivot) => d => {
+  const [x, y] = pivot
+  const text = container.append('text')
+    .attr('x', () => x)
+    .attr('y', () => y + 20)
+    .text('awiefjaoweifjaew');
+  return text;
 };
 
 const createPopupOnMouseover = (container, selection, popupWidth, popupHeight, minX, minY) => {
   selection.on('mouseenter', d => {
-    const constructors = [
-      getContainerConstructor(container, popupWidth, popupHeight, minX, minY)
-    ];
+    // const constructors = [
+    //   getContainerConstructor(container, popupWidth, popupHeight, minX, minY)
+    // ];
 
-    constructors.map(constructor => constructor(d)).map(giveId);
+    // constructors.map(constructor => constructor(d)).map(giveId);
+    const { popupContainer, pivot } = getContainerConstructor(container, popupWidth, popupHeight, minX, minY)(d);
+    giveId(popupContainer);
+    giveId(getTextConstructor(container, pivot)(d));
   }).on('mouseleave', d => {
     container.selectAll('#popup').data([]).exit().remove();
   });
