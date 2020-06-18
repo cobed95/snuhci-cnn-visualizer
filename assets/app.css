@@ -14,6 +14,18 @@ p {
   margin: 10px;
 }
 
+svg {
+  z-index: -1;
+}
+
+.modal {
+  position: relative;
+  width: 200;
+  height: 200;
+  z-index: 10;
+  background-color: 'red';
+}
+
 .content {
   display: none;
 }
