@@ -285,14 +285,24 @@ export default class Visualizer {
               x: x0,
               y: y0,
               width: cellSize * grid.length,
-              height: cellSize * grid[0].length
+              height: cellSize * grid[0].length,
             };
 
             if (i === 0) imageRects.push(gridRect);
             else if (i === 1) conv1Rects.push(gridRect);
-            else if (i === 2) conv1ActivationRects.push(gridRect);
+            else if (i === 2) {
+              gridRect.inputs = [image];
+              gridRect.filters = [conv1Weights[g]];
+
+              conv1ActivationRects.push(gridRect);
+            }
             else if (i === 3) subsampling1Rects.push(gridRect);
-            else if (i === 5) conv2ActivationRects.push(gridRect);
+            else if (i === 5) {
+              gridRect.inputs = subsamplingOutputs1;
+              gridRect.filters = conv2Weights[g];
+              
+              conv2ActivationRects.push(gridRect);
+            }
 
             pivotX += BASE_SIZE;
           }
@@ -369,7 +379,7 @@ export default class Visualizer {
         links.push(link);
       }
       
-      return { rects, conv2ActivationRects, links1: links, arrows, texts1: texts, pivotY };
+      return { rects, conv1ActivationRects, conv2ActivationRects, links1: links, arrows, texts1: texts, pivotY };
     };
 
     const constructCirclesAndLinks = (subsamplingOutputs2, fcWeights, fcActivations, pivotY) => {
@@ -459,7 +469,7 @@ export default class Visualizer {
     const fcWeights = constructFcWeights();
     const fcActivations = constructFcActivations();
 
-    const { rects, conv2ActivationRects, links1, arrows, texts1, pivotY } = constructRectsAndLinks(
+    const { rects, conv1ActivationRects, conv2ActivationRects, links1, arrows, texts1, pivotY } = constructRectsAndLinks(
       image, 
       conv1Weights, 
       conv1Bias,
@@ -491,6 +501,9 @@ export default class Visualizer {
     this.act2  = conv2Activations;
     this.fc    = fcWeights;
     this.act3  = fcActivations;
+
+    this.conv1ActivationRects = conv1ActivationRects;
+    this.conv2ActivationRects = conv2ActivationRects;
 
     this.rects = rects;
     this.circles = circles;
