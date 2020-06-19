@@ -663,6 +663,19 @@ export default class Visualizer {
 
     createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0);
 
+    const conv2Rects = g.selectAll('#conv2Rect')
+      .data(this.conv2ActivationRects)
+      .enter()
+      .append('rect')
+      .attr('id', 'conv2Rect')
+      .attr('width', d => d.width)
+      .attr('height', d => d.height)
+      .attr('x', d => d.x)
+      .attr('y', d => d.y)
+      .attr('opacity', 0);
+
+    createPopupOnMouseover(g, conv2Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0);
+
     g.selectAll("line")
       .data(this.links)
       .enter()
