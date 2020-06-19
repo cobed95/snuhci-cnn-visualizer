@@ -359,8 +359,8 @@ export default class Visualizer {
             else if (i === 5) {
               const conv2WeightsRects = [];
               // const conv2WeightsRects = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3).fill(0)));
-              let x0 = 91;
-              let y0 = -91;
+              let x0 = 21;
+              let y0 = -21;
               for (let f = 7; f >= 0; f--) {
                 for (let i = 0; i < 3; i++) {
                   for (let j = 0; j < 3; j++) {
@@ -375,8 +375,8 @@ export default class Visualizer {
                   }
                 }
 
-                x0 -= 13;
-                y0 += 13;
+                x0 -= 3;
+                y0 += 3;
               }
 
               gridRect.inputs = subsampling1OutputsRects;
