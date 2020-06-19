@@ -661,7 +661,7 @@ export default class Visualizer {
       .attr('y', d => d.y)
       .attr('opacity', 0);
 
-    createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4, BASE_SIZE * 2, -BASE_SIZE, 0);
+    createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0);
 
     g.selectAll("line")
       .data(this.links)
