@@ -351,8 +351,6 @@ export default class Visualizer {
               gridRect.inputs = imageRects_;
               gridRect.filters = conv1WeightsRects;
 
-              console.log(gridRect);
-
               conv1ActivationRects.push(gridRect);
             }
             else if (i === 3) subsampling1Rects.push(gridRect);
@@ -366,10 +364,10 @@ export default class Visualizer {
                   for (let j = 0; j < 3; j++) {
                     // conv2WeightsRects[f][i][j] = {
                     conv2WeightsRects.push({
-                      x: x0 + i * 3,
-                      y: y0 + j * 3,
-                      width: 8,
-                      height: 8,
+                      x: x0 + i * 20,
+                      y: y0 + j * 20,
+                      width: 20,
+                      height: 20,
                       weight: conv2Weights[g][f][i][j]
                     });
                   }
@@ -382,8 +380,6 @@ export default class Visualizer {
               gridRect.inputs = subsampling1OutputsRects;
               gridRect.filters = conv2WeightsRects;
 
-              console.log(gridRect);
-              
               conv2ActivationRects.push(gridRect);
             }
 
@@ -661,7 +657,7 @@ export default class Visualizer {
       .attr('y', d => d.y)
       .attr('opacity', 0);
 
-    createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0);
+    createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0, 1);
 
     const conv2Rects = g.selectAll('#conv2Rect')
       .data(this.conv2ActivationRects)
@@ -674,7 +670,7 @@ export default class Visualizer {
       .attr('y', d => d.y)
       .attr('opacity', 0);
 
-    createPopupOnMouseover(g, conv2Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0);
+    createPopupOnMouseover(g, conv2Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0, 2);
 
     g.selectAll("line")
       .data(this.links)
@@ -734,6 +730,28 @@ export default class Visualizer {
 
         return colorScale(d.weight)
       });
+
+    const conv1Rects = modelContainer.selectAll('#conv1Rect')
+      .data(this.conv1ActivationRects)
+      .attr('id', 'conv1Rect')
+      .attr('width', d => d.width)
+      .attr('height', d => d.height)
+      .attr('x', d => d.x)
+      .attr('y', d => d.y)
+      .attr('opacity', 0);
+
+    createPopupOnMouseover(modelContainer, conv1Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0, 1);
+
+    const conv2Rects = modelContainer.selectAll('#conv2Rect')
+      .data(this.conv2ActivationRects)
+      .attr('id', 'conv2Rect')
+      .attr('width', d => d.width)
+      .attr('height', d => d.height)
+      .attr('x', d => d.x)
+      .attr('y', d => d.y)
+      .attr('opacity', 0);
+
+    createPopupOnMouseover(modelContainer, conv2Rects, BASE_SIZE * 4.5, BASE_SIZE * 2, -BASE_SIZE, 0, 2);
 
     modelContainer.selectAll("line")
       .data(this.links)

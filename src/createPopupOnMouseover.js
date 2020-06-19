@@ -122,8 +122,14 @@ const getRectConstructor = (container, pivot) => d => {
     .append('rect')
     .attr('x', data => data.x + x + offsetX)
     .attr('y', data => data.y + y + offsetY + 10)
-    .attr('width', data => data.width)
-    .attr('height', data => data.height)
+    .attr('width', data => {
+      // console.log(data.width)
+      return data.width
+    })
+    .attr('height', data => {
+      // console.log(data.height)
+      return data.height
+    })
     .attr('stroke', 'gray')
     .attr("fill", d => {
       if (typeof d === "Array") 
@@ -134,10 +140,33 @@ const getRectConstructor = (container, pivot) => d => {
   return { visualizedRect, offsetRect: offsetX + totalWidth };
 }
 
-const getXConstructor = (container, pivot) => d => getRectConstructor(container, pivot)({ data: d.inputs, offsetX: 240, offsetY: 0, totalWidth: 3 * 28 });
-const getFConstructor = (container, pivot) => d => getRectConstructor(container, pivot)({ data: d.filters, offsetX: 350, offsetY: 24, totalWidth: 3 * 20 });
+const getXConstructor = (container, pivot, alignment) => d => getRectConstructor(container, pivot)({ data: d.inputs, ...alignment.x });
+const getFConstructor = (container, pivot, alignment) => d => getRectConstructor(container, pivot)({ data: d.filters, ...alignment.f });
 
-const createPopupOnMouseover = (container, selection, popupWidth, popupHeight, minX, minY) => {
+const createPopupOnMouseover = (container, selection, popupWidth, popupHeight, minX, minY, convLayerIdx) => {
+  const alignment = convLayerIdx === 1 ? {
+    x: {
+      offsetX: 250, 
+      offsetY: 0,
+      totalWidth: 3 * 28
+    },
+    f: {
+      offsetX: 360,
+      offsetY: 24,
+      totalWidth: 3 * 20
+    }
+  } : {
+    x: {
+      offsetX: 250,
+      offsetY: 40,
+      totalWidth: 3 * 20
+    },
+    f: {
+      offsetX: 360,
+      offsetY: 24,
+      totalWidth: 3 * 27
+    }
+  };
   selection.on('mouseenter', d => {
     // const constructors = [
     //   getContainerConstructor(container, popupWidth, popupHeight, minX, minY)
@@ -151,14 +180,14 @@ const createPopupOnMouseover = (container, selection, popupWidth, popupHeight, m
       offset: [10, 3 * 28]
     }
     giveId(getTextConstructor(container, pivot)(forwardPassText1));
-    const { visualizedRect: visualizedInput, offsetRect: offsetInput } = getXConstructor(container, pivot)(d);
+    const { visualizedRect: visualizedInput, offsetRect: offsetInput } = getXConstructor(container, pivot, alignment)(d);
     giveId(visualizedInput);
     const forwardPassText2 = {
       text: ', ',
       offset: [offsetInput + 10, 3 * 28]
     };
     giveId(getTextConstructor(container, pivot)(forwardPassText2));
-    const { visualizedRect: visualizedFilter, offsetRect: offsetFilter } = getFConstructor(container, pivot)(d);
+    const { visualizedRect: visualizedFilter, offsetRect: offsetFilter } = getFConstructor(container, pivot, alignment)(d);
     giveId(visualizedFilter);
     const forwardPassText3 = {
       text: ')',
