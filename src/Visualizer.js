@@ -333,14 +333,14 @@ export default class Visualizer {
 
               for (let x = 0; x < conv1Weights[g].length; x++) {
                 for (let y = 0; y < conv1Weights[g][x].length; y++) {
-                  const xc = x * 3;
-                  const yc = y * 3;
+                  const xc = x * 20;
+                  const yc = y * 20;
   
                   let rect = {
                     x: xc,
                     y: yc,
-                    width: 3,
-                    height: 3,
+                    width: 20,
+                    height: 20,
                     weight: conv1Weights[g][x][y]
                   };
 
