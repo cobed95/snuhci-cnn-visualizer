@@ -361,7 +361,7 @@ export default class Visualizer {
               // const conv2WeightsRects = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3).fill(0)));
               let x0 = 91;
               let y0 = -91;
-              for (let f = 7; f >= 0; f++) {
+              for (let f = 7; f >= 0; f--) {
                 for (let i = 0; i < 3; i++) {
                   for (let j = 0; j < 3; j++) {
                     // conv2WeightsRects[f][i][j] = {
