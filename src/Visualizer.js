@@ -165,6 +165,39 @@ export default class Visualizer {
       const arrows = [];
       const texts = [];
 
+      const imageRects_ = new Array(28).fill(0).map(() => new Array(28).fill(0));
+      for (let x = 0; x < 28; x++) {
+        for (let y = 0; y < 28; y++) {
+          imageRects_[x][y] = {
+            x: x * 3,
+            y: y * 3,
+            width: 3,
+            height: 3,
+            weight: image[x][y][0]
+          };
+        }
+      }
+
+      const subsampling1OutputsRects = new Array(8).fill(0).map(() => new Array(13).fill(0).map(() => new Array(13).fill(0)));
+      let x0 = 0;
+      let y0 = 0;
+      for (let g = 0; g < 8; g++) {
+        for (let i = 0; i < 13; i++) {
+          for (let j = 0; j < 13; j++) {
+            subsampling1OutputsRects[g][i][j] = {
+              x: x0 + i * 3,
+              y: y0 + j * 3,
+              width: 3,
+              height: 3,
+              weight: subsamplingOutputs1[g][i][j]
+            };
+          }
+        }
+
+        x0 += 3;
+        y0 -= 3;
+      }
+
       visLayers.push([[image], 3]);
       visLayers.push([conv1Weights, 20]);
       visLayers.push([conv1Activations, 3]);
@@ -292,15 +325,58 @@ export default class Visualizer {
             if (i === 0) imageRects.push(gridRect);
             else if (i === 1) conv1Rects.push(gridRect);
             else if (i === 2) {
-              gridRect.inputs = [image];
-              gridRect.filters = [conv1Weights[g]];
+              let conv1WeightsRects = new Array(3).fill(0).map(() => new Array(3).fill(0));
+
+              for (let x = 0; x < conv1Weights[g].length; x++) {
+                for (let y = 0; y < conv1Weights[g][x].length; y++) {
+                  const xc = x * 3;
+                  const yc = y * 3;
+  
+                  let rect = {
+                    x: xc,
+                    y: yc,
+                    width: 3,
+                    height: 3,
+                    weight: conv1Weights[g][x][y]
+                  };
+
+                  conv1WeightsRects[x][y] = rect;
+                }
+              }
+
+              gridRect.inputs = [imageRects_];
+              gridRect.filters = [conv1WeightsRects];
+
+              console.log(gridRect);
 
               conv1ActivationRects.push(gridRect);
             }
             else if (i === 3) subsampling1Rects.push(gridRect);
             else if (i === 5) {
-              gridRect.inputs = subsamplingOutputs1;
-              gridRect.filters = conv2Weights[g];
+              const conv2WeightsRects = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3).fill(0)));
+              let x0 = 0;
+              let y0 = 0;
+              for (let f = 0; f < 8; f++) {
+                for (let i = 0; i < 3; i++) {
+                  for (let j = 0; j < 3; j++) {
+                    conv2WeightsRects[f][i][j] = {
+                      x: x0 + i * 3,
+                      y: y0 + j * 3,
+                      width: 3,
+                      height: 3,
+                      weight: conv2Weights[g][f][i][j]
+                    };
+                  }
+                }
+
+                x0 += 13;
+                y0 -= 13;
+              }
+
+              gridRect.inputs = subsampling1OutputsRects;
+              gridRect.filters = conv2WeightsRects;
+
+              console.log(gridRect);
               
               conv2ActivationRects.push(gridRect);
             }
