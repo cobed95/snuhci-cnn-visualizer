@@ -165,32 +165,35 @@ export default class Visualizer {
       const arrows = [];
       const texts = [];
 
-      const imageRects_ = new Array(28).fill(0).map(() => new Array(28).fill(0));
+      // const imageRects_ = new Array(28).fill(0).map(() => new Array(28).fill(0));
+      const imageRects_ = [];
       for (let x = 0; x < 28; x++) {
         for (let y = 0; y < 28; y++) {
-          imageRects_[x][y] = {
+          imageRects_.push({
             x: x * 3,
             y: y * 3,
             width: 3,
             height: 3,
             weight: image[x][y][0]
-          };
+          });
         }
       }
 
-      const subsampling1OutputsRects = new Array(8).fill(0).map(() => new Array(13).fill(0).map(() => new Array(13).fill(0)));
+      // const subsampling1OutputsRects = new Array(8).fill(0).map(() => new Array(13).fill(0).map(() => new Array(13).fill(0)));
+      const subsampling1OutputsRects = [];
       let x0 = 0;
       let y0 = 0;
       for (let g = 0; g < 8; g++) {
         for (let i = 0; i < 13; i++) {
           for (let j = 0; j < 13; j++) {
-            subsampling1OutputsRects[g][i][j] = {
+            // subsampling1OutputsRects[g][i][j] = {
+            subsampling1OutputsRects.push({
               x: x0 + i * 3,
               y: y0 + j * 3,
               width: 3,
               height: 3,
               weight: subsamplingOutputs1[g][i][j]
-            };
+            });
           }
         }
 
@@ -325,7 +328,8 @@ export default class Visualizer {
             if (i === 0) imageRects.push(gridRect);
             else if (i === 1) conv1Rects.push(gridRect);
             else if (i === 2) {
-              let conv1WeightsRects = new Array(3).fill(0).map(() => new Array(3).fill(0));
+              // let conv1WeightsRects = new Array(3).fill(0).map(() => new Array(3).fill(0));
+              let conv1WeightsRects = [];
 
               for (let x = 0; x < conv1Weights[g].length; x++) {
                 for (let y = 0; y < conv1Weights[g][x].length; y++) {
@@ -340,12 +344,12 @@ export default class Visualizer {
                     weight: conv1Weights[g][x][y]
                   };
 
-                  conv1WeightsRects[x][y] = rect;
+                  conv1WeightsRects.push(rect);
                 }
               }
 
-              gridRect.inputs = [imageRects_];
-              gridRect.filters = [conv1WeightsRects];
+              gridRect.inputs = imageRects_;
+              gridRect.filters = conv1WeightsRects;
 
               console.log(gridRect);
 
@@ -353,19 +357,21 @@ export default class Visualizer {
             }
             else if (i === 3) subsampling1Rects.push(gridRect);
             else if (i === 5) {
-              const conv2WeightsRects = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3).fill(0)));
+              const conv2WeightsRects = [];
+              // const conv2WeightsRects = new Array(8).fill(0).map(() => new Array(3).fill(0).map(() => new Array(3).fill(0)));
               let x0 = 0;
               let y0 = 0;
               for (let f = 0; f < 8; f++) {
                 for (let i = 0; i < 3; i++) {
                   for (let j = 0; j < 3; j++) {
-                    conv2WeightsRects[f][i][j] = {
+                    // conv2WeightsRects[f][i][j] = {
+                    conv2WeightsRects.push({
                       x: x0 + i * 3,
                       y: y0 + j * 3,
                       width: 3,
                       height: 3,
                       weight: conv2Weights[g][f][i][j]
-                    };
+                    });
                   }
                 }
 
