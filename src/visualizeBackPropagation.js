@@ -86,20 +86,20 @@ const appendMathJax = (selection, tag, text) => {
 const visualizeBackPropagation = () => {
   const bpContainer = d3.select("#bp-container");
 
-  bpContainer.on('click', function () {
-    console.log('Clicked!');
-    if (convDiagramAnimation.running) {
-      convDiagramAnimation.stop();
-    } else {
-      convDiagramAnimation.run();
-    }
+  // bpContainer.on('click', function () {
+  //   console.log('Clicked!');
+  //   if (convDiagramAnimation.running) {
+  //     convDiagramAnimation.stop();
+  //   } else {
+  //     convDiagramAnimation.run();
+  //   }
 
-    if (bpDiagramAnimation.running) {
-      bpDiagramAnimation.stop();
-    } else {
-      bpDiagramAnimation.run();
-    }
-  });
+  //   if (bpDiagramAnimation.running) {
+  //     bpDiagramAnimation.stop();
+  //   } else {
+  //     bpDiagramAnimation.run();
+  //   }
+  // });
 
   // const convolutionDiagramDimensions = {
   //   minX: 0,

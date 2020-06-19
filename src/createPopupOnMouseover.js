@@ -162,7 +162,7 @@ const createPopupOnMouseover = (container, selection, popupWidth, popupHeight, m
       totalWidth: 3 * 20
     },
     f: {
-      offsetX: 360,
+      offsetX: 340,
       offsetY: 24,
       totalWidth: 3 * 27
     }
