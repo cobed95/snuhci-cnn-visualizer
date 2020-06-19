@@ -577,7 +577,7 @@ export default class Visualizer {
       .attr('height', d => d.height)
       .attr('x', d => d.x)
       .attr('y', d => d.y)
-      .attr('fill', 'red')
+      .attr('opacity', 0);
 
     createPopupOnMouseover(g, conv1Rects, BASE_SIZE * 4, BASE_SIZE * 2, -BASE_SIZE, 0);
 
